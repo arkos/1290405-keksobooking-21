@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
-* Студент: [Kostya Kaganov](https://up.htmlacademy.ru/javascript/21/user/1290405).
-* Наставник: `Неизвестно`.
+- Студент: [Костя Каганов](https://up.htmlacademy.ru/javascript/21/user/1290405).
+- Наставник: [Магомед Кандаев](https://htmlacademy.ru/profile/magomedkandaev).
 
 ---
 
