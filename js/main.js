@@ -56,21 +56,17 @@ const AD_ACCOMODATION_LOCATION_Y_MAX = 500;
 const MAP_PIN_OFFSET_X = -25;
 const MAP_PIN_OFFSET_Y = -70;
 
-const getRandomInRange = function (min, max) {
-  return Math.floor(Math.random() * Math.floor(max - min)) + min;
-};
+const getRandomInRange = (min, max) => Math.floor(Math.random() * Math.floor(max - min)) + min;
 
-const getRandomItem = function (items) {
-  return items[getRandomInRange(0, items.length - 1)];
-};
+const getRandomItem = (items) => items[getRandomInRange(0, items.length - 1)];
 
-const getRandomItems = function (items) {
+const getRandomItems = (items) => {
   const randomLength = getRandomInRange(1, items.length - 1);
   const shuffledItems = shuffleItems(items);
   return shuffledItems.slice(0, randomLength);
 };
 
-const shuffleItems = function (items) {
+const shuffleItems = (items) => {
   const shuffledItems = [...items];
   for (let i = items.length - 1; i >= 1; i--) {
     const randomIndex = getRandomInRange(0, i);
@@ -81,12 +77,12 @@ const shuffleItems = function (items) {
   return shuffledItems;
 };
 
-const mockAvatar = function (index) {
+const mockAvatar = (index) => {
   const padIndex = String(index).padStart(INDEX_PAD_LENGTH, `0`);
   return `img/avatars/user${padIndex}.png`;
 };
 
-const mockAds = function (length) {
+const mockAds = (length) => {
   const ads = [];
 
   for (let i = 0; i < length; i++) {
@@ -121,7 +117,7 @@ const mockAds = function (length) {
   return ads;
 };
 
-const createPinElement = function (pinTemplate, ad) {
+const createPinElement = (pinTemplate, ad) => {
   const pinElement = pinTemplate.cloneNode(true);
 
   const pinLeftPosition = ad.location.x + MAP_PIN_OFFSET_X;
@@ -137,13 +133,13 @@ const createPinElement = function (pinTemplate, ad) {
   return pinElement;
 };
 
-const createPinElements = function (pinTemplate, ads) {
+const createPinElements = (pinTemplate, ads) => {
   const fragment = document.createDocumentFragment();
   ads.forEach((ad) => fragment.appendChild(createPinElement(pinTemplate, ad)));
   return fragment;
 };
 
-window.renderAds = function () {
+window.renderAds = () => {
   const map = document.querySelector(`.map`);
   map.classList.remove(`map--faded`);
 
