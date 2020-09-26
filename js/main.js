@@ -2,6 +2,8 @@
 
 const INDEX_PAD_LENGTH = 2;
 
+const MOCK_ELEMENTS_COUNT = 8;
+
 const AD_ACCOMODATION_TYPES = [
   `palace`,
   `flat`,
@@ -90,7 +92,7 @@ const mockAds = function (length) {
 
     const ad = {
       author: {
-        avatar: mockAvatar(i)
+        avatar: mockAvatar(i + 1)
       },
       offer: {
         title: `Title number #${i + 1}`,
@@ -116,3 +118,41 @@ const mockAds = function (length) {
   return ads;
 };
 
+const createPinElement = function (pinTemplate, ad) {
+  const pinElement = pinTemplate.cloneNode(true);
+
+  const pinLeftPosition = ad.location.x;
+  const pinTopPosition = ad.location.y;
+
+  pinElement.style.left = `${pinLeftPosition}px`;
+  pinElement.style.top = `${pinTopPosition}px`;
+
+  const pinImage = pinElement.querySelector(`img`);
+  pinImage.src = ad.author.avatar;
+  pinImage.alt = ad.offer.title;
+
+  return pinElement;
+};
+
+const createPinElements = function (pinTemplate, ads) {
+  const fragment = document.createDocumentFragment();
+  ads.forEach((ad) => fragment.appendChild(createPinElement(pinTemplate, ad)));
+  return fragment;
+};
+
+window.renderAds = function () {
+  const map = document.querySelector(`.map`);
+  map.classList.remove(`map--faded`);
+
+  const pinTemplate = document
+    .querySelector(`#pin`)
+    .content.querySelector(`.map__pin`);
+
+  const sampleAds = mockAds(MOCK_ELEMENTS_COUNT);
+  const pinElements = createPinElements(pinTemplate, sampleAds);
+
+  const mapPins = document.querySelector(`.map__pins`);
+  mapPins.appendChild(pinElements);
+};
+
+window.renderAds();
