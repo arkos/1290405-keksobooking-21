@@ -53,6 +53,9 @@ const AD_ACCOMODATION_LOCATION_X_MAX = 1200;
 const AD_ACCOMODATION_LOCATION_Y_MIN = 130;
 const AD_ACCOMODATION_LOCATION_Y_MAX = 500;
 
+const MAP_PIN_OFFSET_X = -25;
+const MAP_PIN_OFFSET_Y = -70;
+
 const getRandomInRange = function (min, max) {
   return Math.floor(Math.random() * Math.floor(max - min)) + min;
 };
@@ -121,8 +124,8 @@ const mockAds = function (length) {
 const createPinElement = function (pinTemplate, ad) {
   const pinElement = pinTemplate.cloneNode(true);
 
-  const pinLeftPosition = ad.location.x;
-  const pinTopPosition = ad.location.y;
+  const pinLeftPosition = ad.location.x + MAP_PIN_OFFSET_X;
+  const pinTopPosition = ad.location.y + MAP_PIN_OFFSET_Y;
 
   pinElement.style.left = `${pinLeftPosition}px`;
   pinElement.style.top = `${pinTopPosition}px`;
