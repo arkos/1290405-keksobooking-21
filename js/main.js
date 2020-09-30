@@ -161,24 +161,23 @@ const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
 
 const renderPopupFeatures = (adElement, features) => {
   const popupFeatures = adElement.querySelector(`.popup__features`);
+  popupFeatures.innerHTML = ``;
 
-  for (let feature of popupFeatures.children) {
-    if (feature.matches(`.popup__feature--wifi`) && features.includes(`wifi`)) {
-      feature.textContent = `wifi`;
-    } else if (feature.matches(`.popup__feature--dishwasher`) && features.includes(`dishwasher`)) {
-      feature.textContent = `dishwasher`;
-    } else if (feature.matches(`.popup__feature--parking`) && features.includes(`parking`)) {
-      feature.textContent = `parking`;
-    } else if (feature.matches(`.popup__feature--washer`) && features.includes(`washer`)) {
-      feature.textContent = `washer`;
-    } else if (feature.matches(`.popup__feature--elevator`) && features.includes(`elevator`)) {
-      feature.textContent = `elevator`;
-    } else if (feature.matches(`.popup__feature--conditioner`) && features.includes(`conditioner`)) {
-      feature.textContent = `conditioner`;
-    } else {
-      feature.style.display = `none`;
-    }
+  if (!features || features.length === 0) {
+    popupFeatures.hidden = true;
+    return;
   }
+
+  const fragment = document.createDocumentFragment();
+
+  features.forEach((feature) => {
+    let featureElement = document.createElement(`li`);
+    let classes = [`popup__feature`, `popup__feature--${feature}`];
+    featureElement.classList.add(...classes);
+    fragment.appendChild(featureElement);
+  });
+
+  popupFeatures.appendChild(fragment);
 };
 
 const renderPopupPhotos = (adElement, photos) => {
