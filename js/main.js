@@ -146,10 +146,113 @@ const renderPinElements = (ads) => {
 };
 
 const showMap = () => {
-  const map = document.querySelector(`.map`);
   map.classList.remove(`map--faded`);
 };
 
+const hideMap = () => {
+  map.classList.add(`map--faded`);
+};
+
+const enableAdForm = () => {
+  adForm.classList.remove(`ad-form--disabled`);
+};
+
+const disableAdForm = () => {
+  adForm.classList.add(`ad-form--disabled`);
+};
+
+const enableAdFilters = () => {
+  for (let filter of adForm.children) {
+    filter.disabled = true;
+  }
+};
+
+const disableAdFilters = () => {
+  for (let filter of adForm.children) {
+    filter.disabled = false;
+  }
+};
+
+const activatePage = () => {
+  isActive = true;
+  showMap();
+  enableAdForm();
+  enableMapFilters();
+  enableAdFilters();
+  renderPinElements(sampleAds);
+  setMainPinCoordinates();
+};
+
+const deactivatePage = () => {
+  isActive = false;
+  hideMap();
+  disableAdForm();
+  disableMapFilters();
+  disableAdFilters();
+  setMainPinCoordinates();
+};
+
+const enableMapFilters = () => {
+  for (let filter of mapFilters.children) {
+    filter.disabled = false;
+  }
+};
+
+const disableMapFilters = () => {
+  for (let filter of mapFilters.children) {
+    filter.disabled = true;
+  }
+};
+
+const calcMainPinCoords = () => {
+  const coords = {};
+
+  if (isActive) {
+    coords.x = mapPinMain.style.left + Math.floor(MAP_PIN_WIDTH / 2);
+    coords.y = mapPinMain.style.top + Math.floor(MAP_PIN_HEIGHT / 2);
+  } else {
+    coords.x = mapPinMain.style.left + Math.floor(MAP_PIN_WIDTH / 2);
+    coords.y = mapPinMain.style.top + Math.floor(MAP_PIN_HEIGHT);
+  }
+
+  return coords;
+};
+
+const setMainPinCoordinates = () => {
+  const addressElement = document.querySelector(`#address`);
+  const {x, y} = calcMainPinCoords();
+  addressElement.value = `${x}, ${y}`;
+};
+
+// Event handlers
+
+const onMainPinMouseDown = (evt) => {
+  if (evt.button === 0) {
+    activatePage();
+  }
+};
+
+const onMainPinKeyDown = (evt) => {
+  if (evt.key === `Enter`) {
+    activatePage();
+  }
+};
+
+// Main script
+
+let isActive = false;
+
 const sampleAds = mockAds(MOCK_ELEMENTS_COUNT);
-showMap();
-renderPinElements(sampleAds);
+
+const map = document.querySelector(`.map`);
+const adForm = document.querySelector(`.ad-form`);
+
+const mapFiltersContainer = document.querySelector(`.map__filters-container`);
+const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
+
+const mapPinMain = document.querySelector(`.map__pin--main`);
+mapPinMain.addEventListener(`mousedown`, onMainPinMouseDown);
+mapPinMain.addEventListener(`keydown`, onMainPinKeyDown);
+
+deactivatePage();
+
