@@ -11,12 +11,12 @@ const AD_ACCOMODATION_TYPES = [
   `bungalow`
 ];
 
-const AD_ACCOMODATION_TYPES_RU = {
-  [`palace`]: `Дворец`,
-  [`flat`]: `Квартира`,
-  [`house`]: `Дом`,
-  [`bungalow`]: `Бунгало`
-};
+// const AD_ACCOMODATION_TYPES_RU = {
+//   [`palace`]: `Дворец`,
+//   [`flat`]: `Квартира`,
+//   [`house`]: `Дом`,
+//   [`bungalow`]: `Бунгало`
+// };
 
 const AD_CHECKIN_TIMES = [
   `12:00`,
@@ -63,11 +63,10 @@ const AD_ACCOMODATION_LOCATION_Y_MAX = 630;
 const MAP_PIN_WIDTH = 50;
 const MAP_PIN_HEIGHT = 70;
 
-const MAIN_PIN_INACTIVE_WIDTH = 65;
-const MAIN_PIN_INACTIVE_HEIGHT = 65;
 
-const MAIN_PIN_ACTIVE_WIDTH = 62;
+const MAIN_PIN_WIDTH = 65;
 const MAIN_PIN_ACTIVE_HEIGHT = 84;
+const MAIN_PIN_INACTIVE_HEIGHT = 65;
 
 const CAPACITY_RULES_MAP = {
   [100]: [0],
@@ -181,6 +180,8 @@ const enableAdForm = () => {
 
   const guestsNumber = adForm.querySelector(`#capacity`);
   guestsNumber.addEventListener(`change`, onGuestNumberChange);
+
+  setCapacityValidity(roomsNumber);
 };
 
 const disableAdForm = () => {
@@ -231,13 +232,13 @@ const deactivatePage = () => {
 };
 
 const enableMapFilters = () => {
-  for (let filter of mapFilters.children) {
+  for (const filter of mapFilters.children) {
     filter.disabled = false;
   }
 };
 
 const disableMapFilters = () => {
-  for (let filter of mapFilters.children) {
+  for (const filter of mapFilters.children) {
     filter.disabled = true;
   }
 };
@@ -248,11 +249,11 @@ const calcMainPinCoords = () => {
   const mainPinLeft = parseInt(mapPinMain.style.left, 10);
   const mainPinTop = parseInt(mapPinMain.style.top, 10);
 
+  coords.x = mainPinLeft + Math.floor(MAIN_PIN_WIDTH / 2);
+
   if (isActive) {
-    coords.x = mainPinLeft + Math.floor(MAIN_PIN_ACTIVE_WIDTH / 2);
     coords.y = mainPinTop + MAIN_PIN_ACTIVE_HEIGHT;
   } else {
-    coords.x = mainPinLeft + Math.floor(MAIN_PIN_INACTIVE_WIDTH / 2);
     coords.y = mainPinTop + Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
   }
 
@@ -282,100 +283,107 @@ const setCapacityValidity = (target) => {
   target.reportValidity();
 };
 
-const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
+// Temporarily disable for module 4
 
-const renderPopupFeatures = (adElement, features) => {
-  const popupFeatures = adElement.querySelector(`.popup__features`);
-  popupFeatures.innerHTML = ``;
+// const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
 
-  if (!features || features.length === 0) {
-    popupFeatures.hidden = true;
-    return;
-  }
+// const renderPopupFeatures = (adElement, features) => {
+//   const popupFeatures = adElement.querySelector(`.popup__features`);
+//   popupFeatures.innerHTML = ``;
 
-  const fragment = document.createDocumentFragment();
+//   if (!features || features.length === 0) {
+//     popupFeatures.hidden = true;
+//     return;
+//   }
 
-  features.forEach((feature) => {
-    let featureElement = document.createElement(`li`);
-    let classes = [`popup__feature`, `popup__feature--${feature}`];
-    featureElement.classList.add(...classes);
-    fragment.appendChild(featureElement);
-  });
+//   const fragment = document.createDocumentFragment();
 
-  popupFeatures.appendChild(fragment);
-};
+//   features.forEach((feature) => {
+//     let featureElement = document.createElement(`li`);
+//     let classes = [`popup__feature`, `popup__feature--${feature}`];
+//     featureElement.classList.add(...classes);
+//     fragment.appendChild(featureElement);
+//   });
 
-const renderPopupPhotos = (adElement, photos) => {
-  const popupPhotos = adElement.querySelector(`.popup__photos`);
-  const popupPhoto = popupPhotos.querySelector(`img`);
-  popupPhotos.innerHTML = ``;
+//   popupFeatures.appendChild(fragment);
+// };
 
-  if (!photos || photos.length === 0) {
-    popupPhotos.hidden = true;
-    return;
-  }
+// const renderPopupPhotos = (adElement, photos) => {
+//   const popupPhotos = adElement.querySelector(`.popup__photos`);
+//   const popupPhoto = popupPhotos.querySelector(`img`);
+//   popupPhotos.innerHTML = ``;
 
-  const fragment = document.createDocumentFragment();
+//   if (!photos || photos.length === 0) {
+//     popupPhotos.hidden = true;
+//     return;
+//   }
 
-  photos.forEach((photo) => {
-    let currentPhoto = popupPhoto.cloneNode();
-    currentPhoto.src = photo;
-    fragment.appendChild(currentPhoto);
-  });
+//   const fragment = document.createDocumentFragment();
 
-  popupPhotos.appendChild(fragment);
-};
+//   photos.forEach((photo) => {
+//     let currentPhoto = popupPhoto.cloneNode();
+//     currentPhoto.src = photo;
+//     fragment.appendChild(currentPhoto);
+//   });
 
-const createPopupAdElement = (adTemplate, ad) => {
-  const popupAdElement = adTemplate.cloneNode(true);
+//   popupPhotos.appendChild(fragment);
+// };
 
-  const popupTitle = popupAdElement.querySelector(`.popup__title`);
-  popupTitle.textContent = ad.offer.title;
+// const createPopupAdElement = (adTemplate, ad) => {
+//   const popupAdElement = adTemplate.cloneNode(true);
 
-  const popupAddress = popupAdElement.querySelector(`.popup__text--address`);
-  popupAddress.textContent = ad.offer.address;
+//   const popupTitle = popupAdElement.querySelector(`.popup__title`);
+//   popupTitle.textContent = ad.offer.title;
 
-  const popupPrice = popupAdElement.querySelector(`.popup__text--price`);
-  popupPrice.textContent = `${ad.offer.price}₽/ночь`;
+//   const popupAddress = popupAdElement.querySelector(`.popup__text--address`);
+//   popupAddress.textContent = ad.offer.address;
 
-  const popupType = popupAdElement.querySelector(`.popup__type`);
-  popupType.textContent = getAccomodationTypeRu(ad.offer.type);
+//   const popupPrice = popupAdElement.querySelector(`.popup__text--price`);
+//   popupPrice.textContent = `${ad.offer.price}₽/ночь`;
 
-  const popupCapacity = popupAdElement.querySelector(`.popup__text--capacity`);
-  popupCapacity.textContent = getCapacityDescription(ad.offer);
+//   const popupType = popupAdElement.querySelector(`.popup__type`);
+//   popupType.textContent = getAccomodationTypeRu(ad.offer.type);
 
-  const popupCheckInOut = popupAdElement.querySelector(`.popup__text--time`);
-  popupCheckInOut.textContent = `Заезд после ${ad.offer.checkin}, выезд до ${ad.offer.checkout}`;
+//   const popupCapacity = popupAdElement.querySelector(`.popup__text--capacity`);
+//   popupCapacity.textContent = getCapacityDescription(ad.offer);
 
-  renderPopupFeatures(popupAdElement, ad.offer.features);
+//   const popupCheckInOut = popupAdElement.querySelector(`.popup__text--time`);
+//   popupCheckInOut.textContent = `Заезд после ${ad.offer.checkin}, выезд до ${ad.offer.checkout}`;
 
-  const popupDescription = popupAdElement.querySelector(`.popup__description`);
-  popupDescription.textContent = ad.offer.description;
+//   renderPopupFeatures(popupAdElement, ad.offer.features);
 
-  renderPopupPhotos(popupAdElement, ad.offer.photos);
+//   const popupDescription = popupAdElement.querySelector(`.popup__description`);
+//   popupDescription.textContent = ad.offer.description;
 
-  const popupAvatar = popupAdElement.querySelector(`.popup__avatar`);
-  popupAvatar.src = ad.author.avatar;
+//   renderPopupPhotos(popupAdElement, ad.offer.photos);
 
-  return popupAdElement;
-};
+//   const popupAvatar = popupAdElement.querySelector(`.popup__avatar`);
+//   popupAvatar.src = ad.author.avatar;
 
-const getCapacityDescription = (offer) => {
-  let roomsDescription = `комнаты`;
-  let guestsDescription = `гостей`;
+//   return popupAdElement;
+// };
 
-  if (offer.rooms !== 11 && offer.rooms % 10 === 1) {
-    roomsDescription = `комната`;
-  } else if ((offer.rooms % 10 >= 5) || (offer.rooms >= 11 && offer.rooms <= 14) || (offer.rooms % 10 === 0)) {
-    roomsDescription = `комнат`;
-  }
+// const getCapacityDescription = (offer) => {
+//   let roomsDescription = `комнаты`;
+//   let guestsDescription = `гостей`;
 
-  if (offer.guests !== 11 && offer.guests % 10 === 1) {
-    guestsDescription = `гостя`;
-  }
+//   if (offer.rooms !== 11 && offer.rooms % 10 === 1) {
+//     roomsDescription = `комната`;
+//   } else if ((offer.rooms % 10 >= 5) || (offer.rooms >= 11 && offer.rooms <= 14) || (offer.rooms % 10 === 0)) {
+//     roomsDescription = `комнат`;
+//   }
 
-  return `${offer.rooms} ${roomsDescription} для ${offer.guests} ${guestsDescription}`;
-};
+//   if (offer.guests !== 11 && offer.guests % 10 === 1) {
+//     guestsDescription = `гостя`;
+//   }
+
+//   return `${offer.rooms} ${roomsDescription} для ${offer.guests} ${guestsDescription}`;
+// };
+
+// const renderAdPopup = (ad) => {
+//   const popupTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
+//   map.insertBefore(createPopupAdElement(popupTemplate, ad), mapFiltersContainer);
+// };
 
 // Event handlers
 
@@ -422,13 +430,6 @@ mapPinMain.addEventListener(`keydown`, onMainPinInactiveKeyDown);
 // Temporarily disable for module 4
 
 // renderAdPopup(sampleAds[0]);
-
-// const renderAdPopup = (ad) => {
-//   const popupTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-//   const map = document.querySelector(`.map`);
-//   const mapFiltersContainer = map.querySelector(`.map__filters-container`);
-//   map.insertBefore(createPopupAdElement(popupTemplate, ad), mapFiltersContainer);
-// };
 
 deactivatePage();
 
