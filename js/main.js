@@ -56,6 +56,12 @@ const AD_ACCOMODATION_LOCATION_Y_MAX = 630;
 const MAP_PIN_WIDTH = 50;
 const MAP_PIN_HEIGHT = 70;
 
+const MAIN_PIN_INACTIVE_WIDTH = 65;
+const MAIN_PIN_INACTIVE_HEIGHT = 65;
+
+const MAIN_PIN_ACTIVE_WIDTH = 62;
+const MAIN_PIN_ACTIVE_HEIGHT = 84;
+
 const CAPACITY_RULES_MAP = {
   [100]: [0],
   [1]: [1],
@@ -194,6 +200,12 @@ const disableAdFilters = () => {
 
 const activatePage = () => {
   isActive = true;
+
+  mapPinMain.removeEventListener(`mousedown`, onMainPinInactiveMouseDown);
+  mapPinMain.removeEventListener(`keydown`, onMainPinInactiveKeyDown);
+
+  mapPinMain.addEventListener(`mousedown`, onMainPinActiveMouseDown);
+
   showMap();
   enableAdForm();
   enableMapFilters();
@@ -229,12 +241,12 @@ const calcMainPinCoords = () => {
   const mainPinLeft = parseInt(mapPinMain.style.left, 10);
   const mainPinTop = parseInt(mapPinMain.style.top, 10);
 
-  coords.x = mainPinLeft + Math.floor(MAP_PIN_WIDTH / 2);
-
   if (isActive) {
-    coords.y = mainPinTop + Math.floor(MAP_PIN_HEIGHT / 2);
+    coords.x = mainPinLeft + Math.floor(MAIN_PIN_ACTIVE_WIDTH / 2);
+    coords.y = mainPinTop + MAIN_PIN_ACTIVE_HEIGHT;
   } else {
-    coords.y = mainPinTop + Math.floor(MAP_PIN_HEIGHT);
+    coords.x = mainPinLeft + Math.floor(MAIN_PIN_INACTIVE_WIDTH / 2);
+    coords.y = mainPinTop + Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
   }
 
   return coords;
@@ -265,16 +277,20 @@ const setCapacityValidity = (target) => {
 
 // Event handlers
 
-const onMainPinMouseDown = (evt) => {
+const onMainPinInactiveMouseDown = (evt) => {
   if (evt.button === 0) {
     activatePage();
   }
 };
 
-const onMainPinKeyDown = (evt) => {
+const onMainPinInactiveKeyDown = (evt) => {
   if (evt.key === `Enter`) {
     activatePage();
   }
+};
+
+const onMainPinActiveMouseDown = () => {
+  // Placeholder to support main pin dragging across the map
 };
 
 const onRoomsNumberChange = (evt) => {
@@ -298,8 +314,8 @@ const mapFiltersContainer = document.querySelector(`.map__filters-container`);
 const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
 
 const mapPinMain = document.querySelector(`.map__pin--main`);
-mapPinMain.addEventListener(`mousedown`, onMainPinMouseDown);
-mapPinMain.addEventListener(`keydown`, onMainPinKeyDown);
+mapPinMain.addEventListener(`mousedown`, onMainPinInactiveMouseDown);
+mapPinMain.addEventListener(`keydown`, onMainPinInactiveKeyDown);
 
 deactivatePage();
 
