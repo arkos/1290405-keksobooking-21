@@ -182,7 +182,7 @@ const renderPopupFeatures = (adElement, features) => {
 
 const renderPopupPhotos = (adElement, photos) => {
   const popupPhotos = adElement.querySelector(`.popup__photos`);
-  const clonePopupPhoto = popupPhotos.querySelector(`img`).cloneNode();
+  const popupPhoto = popupPhotos.querySelector(`img`);
   popupPhotos.innerHTML = ``;
 
   if (!photos || photos.length === 0) {
@@ -193,7 +193,7 @@ const renderPopupPhotos = (adElement, photos) => {
   const fragment = document.createDocumentFragment();
 
   photos.forEach((photo) => {
-    let currentPhoto = clonePopupPhoto.cloneNode();
+    let currentPhoto = popupPhoto.cloneNode();
     currentPhoto.src = photo;
     fragment.appendChild(currentPhoto);
   });
