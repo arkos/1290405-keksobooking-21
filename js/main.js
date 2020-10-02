@@ -56,6 +56,13 @@ const AD_ACCOMODATION_LOCATION_Y_MAX = 630;
 const MAP_PIN_WIDTH = 50;
 const MAP_PIN_HEIGHT = 70;
 
+const CAPACITY_RULES_MAP = {
+  [100]: [0],
+  [1]: [1],
+  [2]: [1, 2],
+  [3]: [1, 2, 3]
+};
+
 const getRandomInRange = (min, max) => Math.floor(Math.random() * Math.floor(max - min)) + min;
 
 const getRandomItem = (items) => items[getRandomInRange(0, items.length - 1)];
@@ -219,12 +226,15 @@ const disableMapFilters = () => {
 const calcMainPinCoords = () => {
   const coords = {};
 
+  const mainPinLeft = parseInt(mapPinMain.style.left, 10);
+  const mainPinTop = parseInt(mapPinMain.style.top, 10);
+
+  coords.x = mainPinLeft + Math.floor(MAP_PIN_WIDTH / 2);
+
   if (isActive) {
-    coords.x = mapPinMain.style.left + Math.floor(MAP_PIN_WIDTH / 2);
-    coords.y = mapPinMain.style.top + Math.floor(MAP_PIN_HEIGHT / 2);
+    coords.y = mainPinTop + Math.floor(MAP_PIN_HEIGHT / 2);
   } else {
-    coords.x = mapPinMain.style.left + Math.floor(MAP_PIN_WIDTH / 2);
-    coords.y = mapPinMain.style.top + Math.floor(MAP_PIN_HEIGHT);
+    coords.y = mainPinTop + Math.floor(MAP_PIN_HEIGHT);
   }
 
   return coords;
@@ -236,12 +246,21 @@ const setMainPinCoordinates = () => {
   addressElement.value = `${x}, ${y}`;
 };
 
-const validateRoomCapacity = (rooms, guests) => {
-  if ((rooms !== 100 && guests === 0) || ((rooms === 100 && guests !== 0)) || (guests > rooms)) {
-    return false;
-  } else {
-    return true;
+const validateRoomCapacity = (rooms, guests) => CAPACITY_RULES_MAP[rooms].includes(guests);
+
+const setCapacityValidity = (target) => {
+  const roomsNumber = adForm.querySelector(`#room_number`);
+  const guestsNumber = adForm.querySelector(`#capacity`);
+  const isValid = validateRoomCapacity(+roomsNumber.value, +guestsNumber.value);
+
+  roomsNumber.setCustomValidity(``);
+  guestsNumber.setCustomValidity(``);
+
+  if (!isValid) {
+    target.setCustomValidity(`Количество комнат не соответствует количеству гостей`);
   }
+
+  target.reportValidity();
 };
 
 // Event handlers
@@ -264,20 +283,6 @@ const onRoomsNumberChange = (evt) => {
 
 const onGuestNumberChange = (evt) => {
   setCapacityValidity(evt.target);
-};
-
-const setCapacityValidity = (target) => {
-  const roomsNumber = adForm.querySelector(`#room_number`);
-  const guestsNumber = adForm.querySelector(`#capacity`);
-  const isValid = validateRoomCapacity(+roomsNumber.value, +guestsNumber.value);
-
-  if (!isValid) {
-    target.setCustomValidity(`Rooms number doesn't match the capacity`);
-  } else {
-    target.setCustomValidity(``);
-  }
-
-  target.reportValidity();
 };
 
 // Main script
