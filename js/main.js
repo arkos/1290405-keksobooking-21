@@ -217,7 +217,7 @@ const createPopupAdElement = (adTemplate, ad) => {
   popupType.textContent = getAccomodationTypeRu(ad.offer.type);
 
   const popupCapacity = popupAdElement.querySelector(`.popup__text--capacity`);
-  popupCapacity.textContent = `${ad.offer.rooms} комнаты для ${ad.offer.guests} гостей`;
+  popupCapacity.textContent = getCapacityDescription(ad.offer);
 
   const popupCheckInOut = popupAdElement.querySelector(`.popup__text--time`);
   popupCheckInOut.textContent = `Заезд после ${ad.offer.checkin}, выезд до ${ad.offer.checkout}`;
@@ -233,6 +233,23 @@ const createPopupAdElement = (adTemplate, ad) => {
   popupAvatar.src = ad.author.avatar;
 
   return popupAdElement;
+};
+
+const getCapacityDescription = (offer) => {
+  let roomsDescription = `комнаты`;
+  let guestsDescription = `гостей`;
+
+  if (offer.rooms !== 11 && offer.rooms % 10 === 1) {
+    roomsDescription = `комната`;
+  } else if ((offer.rooms % 10 >= 5) || (offer.rooms >= 11 && offer.rooms <= 14) || (offer.rooms % 10 === 0)) {
+    roomsDescription = `комнат`;
+  }
+
+  if (offer.guests !== 11 && offer.guests % 10 === 1) {
+    guestsDescription = `гостя`;
+  }
+
+  return `${offer.rooms} ${roomsDescription} для ${offer.guests} ${guestsDescription}`;
 };
 
 const renderAdPopup = (ad) => {
