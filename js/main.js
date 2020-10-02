@@ -155,21 +155,33 @@ const hideMap = () => {
 
 const enableAdForm = () => {
   adForm.classList.remove(`ad-form--disabled`);
+
+  const roomsNumber = adForm.querySelector(`#room_number`);
+  roomsNumber.addEventListener(`change`, onRoomsNumberChange);
+
+  const guestsNumber = adForm.querySelector(`#capacity`);
+  guestsNumber.addEventListener(`change`, onGuestNumberChange);
 };
 
 const disableAdForm = () => {
   adForm.classList.add(`ad-form--disabled`);
+
+  const roomsNumber = adForm.querySelector(`#room_number`);
+  roomsNumber.removeEventListener(`change`, onRoomsNumberChange);
+
+  const guestsNumber = adForm.querySelector(`#capacity`);
+  guestsNumber.removeEventListener(`change`, onGuestNumberChange);
 };
 
 const enableAdFilters = () => {
   for (let filter of adForm.children) {
-    filter.disabled = true;
+    filter.disabled = false;
   }
 };
 
 const disableAdFilters = () => {
   for (let filter of adForm.children) {
-    filter.disabled = false;
+    filter.disabled = true;
   }
 };
 
@@ -224,6 +236,14 @@ const setMainPinCoordinates = () => {
   addressElement.value = `${x}, ${y}`;
 };
 
+const validateRoomCapacity = (rooms, guests) => {
+  if ((rooms !== 100 && guests === 0) || ((rooms === 100 && guests !== 0)) || (guests > rooms)) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
 // Event handlers
 
 const onMainPinMouseDown = (evt) => {
@@ -236,6 +256,28 @@ const onMainPinKeyDown = (evt) => {
   if (evt.key === `Enter`) {
     activatePage();
   }
+};
+
+const onRoomsNumberChange = (evt) => {
+  setCapacityValidity(evt.target);
+};
+
+const onGuestNumberChange = (evt) => {
+  setCapacityValidity(evt.target);
+};
+
+const setCapacityValidity = (target) => {
+  const roomsNumber = adForm.querySelector(`#room_number`);
+  const guestsNumber = adForm.querySelector(`#capacity`);
+  const isValid = validateRoomCapacity(+roomsNumber.value, +guestsNumber.value);
+
+  if (!isValid) {
+    target.setCustomValidity(`Rooms number doesn't match the capacity`);
+  } else {
+    target.setCustomValidity(``);
+  }
+
+  target.reportValidity();
 };
 
 // Main script
