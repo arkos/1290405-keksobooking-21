@@ -1,6 +1,22 @@
 'use strict';
 
 (() => {
+
+  const ENTER_KEY_CODE = 13;
+  const MAIN_MOUSE_BUTTON_DOWN_CODE = 0;
+
+  const isEnterEvent = (evt, action) => {
+    if (evt.keyCode === ENTER_KEY_CODE) {
+      action();
+    }
+  };
+
+  const isMainMouseButtonEvent = (evt, action) => {
+    if (evt.button === MAIN_MOUSE_BUTTON_DOWN_CODE) {
+      action();
+    }
+  };
+
   const getRandomInRange = (min, max) => Math.floor(Math.random() * Math.floor(max - min)) + min;
 
   const getRandomItem = (items) => items[getRandomInRange(0, items.length - 1)];
@@ -25,7 +41,9 @@
   window.util = {
     getRandomInRange,
     getRandomItem,
-    getRandomItems
+    getRandomItems,
+    isEnterEvent,
+    isMainMouseButtonEvent
   };
 
 })();

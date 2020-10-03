@@ -22,15 +22,13 @@ const deactivatePage = () => {
 // Event handlers
 
 const onMainPinInactiveMouseDown = (evt) => {
-  if (evt.button === 0) {
-    activatePage();
-  }
+  const {util} = window;
+  util.isMainMouseButtonEvent(evt, activatePage);
 };
 
 const onMainPinInactiveKeyDown = (evt) => {
-  if (evt.key === `Enter`) {
-    activatePage();
-  }
+  const {util} = window;
+  util.isEnterEvent(evt, activatePage);
 };
 
 const onMainPinActiveMouseDown = () => {
