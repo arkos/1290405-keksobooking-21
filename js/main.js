@@ -195,13 +195,13 @@ const disableAdForm = () => {
 };
 
 const enableAdFilters = () => {
-  for (let filter of adForm.children) {
+  for (const filter of adForm.children) {
     filter.disabled = false;
   }
 };
 
 const disableAdFilters = () => {
-  for (let filter of adForm.children) {
+  for (const filter of adForm.children) {
     filter.disabled = true;
   }
 };
