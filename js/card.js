@@ -60,11 +60,6 @@
     return `${offer.rooms} ${roomsDescription} для ${offer.guests} ${guestsDescription}`;
   };
 
-  const renderAdPopup = (ad) => {
-    const popupTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-    map.insertBefore(createPopupAdElement(popupTemplate, ad), mapFiltersContainer);
-  };
-
   const renderPopupPhotos = (adElement, photos) => {
     const popupPhotos = adElement.querySelector(`.popup__photos`);
     const popupPhoto = popupPhotos.querySelector(`img`);
@@ -110,7 +105,7 @@
   const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
 
   window.card = {
-    renderAdPopup
+    createPopupAdElement
   };
 
 })();

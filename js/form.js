@@ -20,6 +20,9 @@
     const guestsNumber = adForm.querySelector(`#capacity`);
     guestsNumber.addEventListener(`change`, onGuestNumberChange);
 
+    enableAdFilters();
+    setMainPinCoordinates();
+
     setCapacityValidity(roomsNumber);
   };
 
@@ -31,6 +34,9 @@
 
     const guestsNumber = adForm.querySelector(`#capacity`);
     guestsNumber.removeEventListener(`change`, onGuestNumberChange);
+
+    disableAdFilters();
+    setMainPinCoordinates();
   };
 
   const validateRoomCapacity = (rooms, guests) => CAPACITY_RULES_MAP[rooms].includes(guests);
@@ -70,12 +76,17 @@
     }
   };
 
+  const setMainPinCoordinates = () => {
+    const addressElement = document.querySelector(`#address`);
+    const {x, y} = window.map.calcMainPinCoords();
+    addressElement.value = `${x}, ${y}`;
+  };
+
 
   window.form = {
     enableAdForm,
     disableAdForm,
-    enableAdFilters,
-    disableAdFilters
+    setMainPinCoordinates
   };
 
 })();

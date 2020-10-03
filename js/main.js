@@ -1,33 +1,22 @@
 'use strict';
 
 const activatePage = () => {
-  isActive = true;
+  const {map, form} = window;
 
-  const {map, form, pin} = window;
+  map.removeOnMainPinMouseDown(onMainPinInactiveMouseDown);
+  map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
 
-  mapPinMain.removeEventListener(`mousedown`, onMainPinInactiveMouseDown);
-  mapPinMain.removeEventListener(`keydown`, onMainPinInactiveKeyDown);
-
-  mapPinMain.addEventListener(`mousedown`, onMainPinActiveMouseDown);
+  map.addOnMainPinMouseDown(onMainPinActiveMouseDown);
 
   map.showMap();
   form.enableAdForm();
-  map.enableMapFilters();
-  form.enableAdFilters();
-  pin.renderPinElements(sampleAds);
-  pin.setMainPinCoordinates();
 };
 
 const deactivatePage = () => {
-  isActive = false;
-
-  const {map, form, pin} = window;
+  const {map, form} = window;
 
   map.hideMap();
   form.disableAdForm();
-  map.disableMapFilters();
-  form.disableAdFilters();
-  pin.setMainPinCoordinates();
 };
 
 // Event handlers
@@ -49,16 +38,8 @@ const onMainPinActiveMouseDown = () => {
 };
 
 // Main script
-
-let isActive = false;
-
-const sampleAds = window.data.mockAds();
-
-const mapPinMain = document.querySelector(`.map__pin--main`);
-mapPinMain.addEventListener(`mousedown`, onMainPinInactiveMouseDown);
-mapPinMain.addEventListener(`keydown`, onMainPinInactiveKeyDown);
-
-window.card.renderAdPopup(sampleAds[0]);
+window.map.addOnMainPinMouseDown(onMainPinInactiveMouseDown);
+window.map.addOnMainPinKeyDown(onMainPinInactiveKeyDown);
 
 deactivatePage();
 
