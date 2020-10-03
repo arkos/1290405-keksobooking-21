@@ -99,5 +99,6 @@
   window.data = {
     mockAds
   };
+
 })();
 

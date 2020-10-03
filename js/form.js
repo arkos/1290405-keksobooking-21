@@ -82,11 +82,9 @@
     addressElement.value = `${x}, ${y}`;
   };
 
-
   window.form = {
     enableAdForm,
     disableAdForm,
-    setMainPinCoordinates
   };
 
 })();

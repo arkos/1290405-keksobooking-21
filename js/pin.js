@@ -24,4 +24,5 @@
   window.pin = {
     createPinElement,
   };
+
 })();

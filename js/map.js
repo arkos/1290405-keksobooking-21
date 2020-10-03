@@ -104,5 +104,6 @@
     removeOnMainPinKeyDown,
     getMainPinCoords
   };
+
 })();
 
