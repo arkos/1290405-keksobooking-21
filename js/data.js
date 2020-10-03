@@ -13,13 +13,6 @@
     `bungalow`
   ];
 
-  const AD_ACCOMODATION_TYPES_RU = {
-    [`palace`]: `Дворец`,
-    [`flat`]: `Квартира`,
-    [`house`]: `Дом`,
-    [`bungalow`]: `Бунгало`
-  };
-
   const AD_CHECKIN_TIMES = [
     `12:00`,
     `13:00`,
