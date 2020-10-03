@@ -38,8 +38,10 @@ const onMainPinActiveMouseDown = () => {
 };
 
 // Main script
-window.map.addOnMainPinMouseDown(onMainPinInactiveMouseDown);
-window.map.addOnMainPinKeyDown(onMainPinInactiveKeyDown);
+const {map} = window;
+
+map.addOnMainPinMouseDown(onMainPinInactiveMouseDown);
+map.addOnMainPinKeyDown(onMainPinInactiveKeyDown);
 
 deactivatePage();
 

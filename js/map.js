@@ -2,25 +2,27 @@
 
 (() => {
 
-  const mapPinMain = document.querySelector(`.map__pin--main`);
-
-  let isActive = false;
-
-  const sampleAds = window.data.mockAds();
-
   const MAIN_PIN_WIDTH = 65;
   const MAIN_PIN_ACTIVE_HEIGHT = 84;
   const MAIN_PIN_INACTIVE_HEIGHT = 65;
 
   const map = document.querySelector(`.map`);
+  const mapPinMain = map.querySelector(`.map__pin--main`);
 
   const mapFiltersContainer = document.querySelector(`.map__filters-container`);
   const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
 
+  const mainPinPointer = {
+    x: Math.floor(MAIN_PIN_WIDTH / 2),
+    y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2)
+  };
+
+  const sampleAds = window.data.mockAds();
+
   const showMap = () => {
     map.classList.remove(`map--faded`);
 
-    isActive = true;
+    mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
 
     renderPinElements(sampleAds);
     renderAdPopup(sampleAds[0]);
@@ -30,7 +32,7 @@
   const hideMap = () => {
     map.classList.add(`map--faded`);
 
-    isActive = false;
+    mainPinPointer.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
 
     disableMapFilters();
 
@@ -69,19 +71,14 @@
     map.insertBefore(window.card.createPopupAdElement(popupTemplate, ad), mapFiltersContainer);
   };
 
-  const calcMainPinCoords = () => {
+  const getMainPinCoords = () => {
     const coords = {};
 
     const mainPinLeft = parseInt(mapPinMain.style.left, 10);
     const mainPinTop = parseInt(mapPinMain.style.top, 10);
 
-    coords.x = mainPinLeft + Math.floor(MAIN_PIN_WIDTH / 2);
-
-    if (isActive) {
-      coords.y = mainPinTop + MAIN_PIN_ACTIVE_HEIGHT;
-    } else {
-      coords.y = mainPinTop + Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
-    }
+    coords.x = mainPinLeft + mainPinPointer.x;
+    coords.y = mainPinTop + mainPinPointer.y;
 
     return coords;
   };
@@ -104,7 +101,8 @@
     addOnMainPinMouseDown,
     addOnMainPinKeyDown,
     removeOnMainPinMouseDown,
-    removeOnMainPinKeyDown
+    removeOnMainPinKeyDown,
+    getMainPinCoords
   };
 })();
 
