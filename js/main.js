@@ -8,15 +8,15 @@ const activatePage = () => {
 
   map.addOnMainPinMouseDown(onMainPinActiveMouseDown);
 
-  map.showMap();
-  form.enableAdForm();
+  map.show();
+  form.enable();
 };
 
 const deactivatePage = () => {
   const {map, form} = window;
 
-  map.hideMap();
-  form.disableAdForm();
+  map.hide();
+  form.disable();
 };
 
 // Event handlers

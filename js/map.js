@@ -19,32 +19,32 @@
 
   const sampleAds = window.data.mockAds();
 
-  const showMap = () => {
+  const show = () => {
     map.classList.remove(`map--faded`);
 
     mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
 
-    renderPinElements(sampleAds);
-    renderAdPopup(sampleAds[0]);
-    enableMapFilters();
+    renderpins(sampleAds);
+    renderPopup(sampleAds[0]);
+    enableFilters();
   };
 
-  const hideMap = () => {
+  const hide = () => {
     map.classList.add(`map--faded`);
 
     mainPinPointer.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
 
-    disableMapFilters();
+    disableFilters();
 
   };
 
-  const enableMapFilters = () => {
+  const enableFilters = () => {
     for (const filter of mapFilters.children) {
       filter.disabled = false;
     }
   };
 
-  const disableMapFilters = () => {
+  const disableFilters = () => {
     for (const filter of mapFilters.children) {
       filter.disabled = true;
     }
@@ -66,9 +66,9 @@
     mapPinMain.removeEventListener(`keydown`, cb);
   };
 
-  const renderAdPopup = (ad) => {
+  const renderPopup = (ad) => {
     const popupTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-    map.insertBefore(window.card.createPopupAdElement(popupTemplate, ad), mapFiltersContainer);
+    map.insertBefore(window.card.create(popupTemplate, ad), mapFiltersContainer);
   };
 
   const getMainPinCoords = () => {
@@ -83,21 +83,21 @@
     return coords;
   };
 
-  const renderPinElements = (ads) => {
+  const renderpins = (ads) => {
     const pinTemplate = document
       .querySelector(`#pin`)
       .content.querySelector(`.map__pin`);
 
     const fragment = document.createDocumentFragment();
-    ads.forEach((ad) => fragment.appendChild(window.pin.createPinElement(pinTemplate, ad)));
+    ads.forEach((ad) => fragment.appendChild(window.pin.create(pinTemplate, ad)));
 
     const mapPins = document.querySelector(`.map__pins`);
     mapPins.appendChild(fragment);
   };
 
   window.map = {
-    showMap,
-    hideMap,
+    show,
+    hide,
     addOnMainPinMouseDown,
     addOnMainPinKeyDown,
     removeOnMainPinMouseDown,

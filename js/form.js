@@ -11,7 +11,7 @@
 
   const adForm = document.querySelector(`.ad-form`);
 
-  const enableAdForm = () => {
+  const enable = () => {
     adForm.classList.remove(`ad-form--disabled`);
 
     const roomsNumber = adForm.querySelector(`#room_number`);
@@ -20,13 +20,13 @@
     const guestsNumber = adForm.querySelector(`#capacity`);
     guestsNumber.addEventListener(`change`, onGuestNumberChange);
 
-    enableAdFilters();
+    enableFilters();
     setMainPinCoordinates();
 
     setCapacityValidity(roomsNumber);
   };
 
-  const disableAdForm = () => {
+  const disable = () => {
     adForm.classList.add(`ad-form--disabled`);
 
     const roomsNumber = adForm.querySelector(`#room_number`);
@@ -35,7 +35,7 @@
     const guestsNumber = adForm.querySelector(`#capacity`);
     guestsNumber.removeEventListener(`change`, onGuestNumberChange);
 
-    disableAdFilters();
+    disableFilters();
     setMainPinCoordinates();
   };
 
@@ -64,13 +64,13 @@
     setCapacityValidity(evt.target);
   };
 
-  const enableAdFilters = () => {
+  const enableFilters = () => {
     for (const filter of adForm.children) {
       filter.disabled = false;
     }
   };
 
-  const disableAdFilters = () => {
+  const disableFilters = () => {
     for (const filter of adForm.children) {
       filter.disabled = true;
     }
@@ -83,8 +83,8 @@
   };
 
   window.form = {
-    enableAdForm,
-    disableAdForm,
+    enable,
+    disable,
   };
 
 })();

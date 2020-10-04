@@ -9,38 +9,38 @@
     [`bungalow`]: `Бунгало`
   };
 
-  const createPopupAdElement = (adTemplate, ad) => {
-    const popupAdElement = adTemplate.cloneNode(true);
+  const create = (adTemplate, ad) => {
+    const popup = adTemplate.cloneNode(true);
 
-    const popupTitle = popupAdElement.querySelector(`.popup__title`);
+    const popupTitle = popup.querySelector(`.popup__title`);
     popupTitle.textContent = ad.offer.title;
 
-    const popupAddress = popupAdElement.querySelector(`.popup__text--address`);
+    const popupAddress = popup.querySelector(`.popup__text--address`);
     popupAddress.textContent = ad.offer.address;
 
-    const popupPrice = popupAdElement.querySelector(`.popup__text--price`);
+    const popupPrice = popup.querySelector(`.popup__text--price`);
     popupPrice.textContent = `${ad.offer.price}₽/ночь`;
 
-    const popupType = popupAdElement.querySelector(`.popup__type`);
+    const popupType = popup.querySelector(`.popup__type`);
     popupType.textContent = getAccomodationTypeRu(ad.offer.type);
 
-    const popupCapacity = popupAdElement.querySelector(`.popup__text--capacity`);
+    const popupCapacity = popup.querySelector(`.popup__text--capacity`);
     popupCapacity.textContent = getCapacityDescription(ad.offer);
 
-    const popupCheckInOut = popupAdElement.querySelector(`.popup__text--time`);
+    const popupCheckInOut = popup.querySelector(`.popup__text--time`);
     popupCheckInOut.textContent = `Заезд после ${ad.offer.checkin}, выезд до ${ad.offer.checkout}`;
 
-    renderPopupFeatures(popupAdElement, ad.offer.features);
+    renderFeatures(popup, ad.offer.features);
 
-    const popupDescription = popupAdElement.querySelector(`.popup__description`);
+    const popupDescription = popup.querySelector(`.popup__description`);
     popupDescription.textContent = ad.offer.description;
 
-    renderPopupPhotos(popupAdElement, ad.offer.photos);
+    renderPhotos(popup, ad.offer.photos);
 
-    const popupAvatar = popupAdElement.querySelector(`.popup__avatar`);
+    const popupAvatar = popup.querySelector(`.popup__avatar`);
     popupAvatar.src = ad.author.avatar;
 
-    return popupAdElement;
+    return popup;
   };
 
   const getCapacityDescription = (offer) => {
@@ -60,7 +60,7 @@
     return `${offer.rooms} ${roomsDescription} для ${offer.guests} ${guestsDescription}`;
   };
 
-  const renderPopupPhotos = (adElement, photos) => {
+  const renderPhotos = (adElement, photos) => {
     const popupPhotos = adElement.querySelector(`.popup__photos`);
     const popupPhoto = popupPhotos.querySelector(`img`);
     popupPhotos.innerHTML = ``;
@@ -81,7 +81,7 @@
     popupPhotos.appendChild(fragment);
   };
 
-  const renderPopupFeatures = (adElement, features) => {
+  const renderFeatures = (adElement, features) => {
     const popupFeatures = adElement.querySelector(`.popup__features`);
     popupFeatures.innerHTML = ``;
 
@@ -105,7 +105,7 @@
   const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
 
   window.card = {
-    createPopupAdElement
+    create
   };
 
 })();
