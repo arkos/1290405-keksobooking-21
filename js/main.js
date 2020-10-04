@@ -1,9 +1,9 @@
 'use strict';
 
 (() => {
-  const activatePage = () => {
-    const {map, form} = window;
+  const {map, form, util} = window;
 
+  const activatePage = () => {
     map.removeOnMainPinMouseDown(onMainPinInactiveMouseDown);
     map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
 
@@ -14,8 +14,6 @@
   };
 
   const deactivatePage = () => {
-    const {map, form} = window;
-
     map.hide();
     form.disable();
   };
@@ -23,12 +21,10 @@
   // Event handlers
 
   const onMainPinInactiveMouseDown = (evt) => {
-    const {util} = window;
     util.isMainMouseButtonEvent(evt, activatePage);
   };
 
   const onMainPinInactiveKeyDown = (evt) => {
-    const {util} = window;
     util.isEnterEvent(evt, activatePage);
   };
 
@@ -37,8 +33,6 @@
   };
 
   // Main script
-  const {map} = window;
-
   map.addOnMainPinMouseDown(onMainPinInactiveMouseDown);
   map.addOnMainPinKeyDown(onMainPinInactiveKeyDown);
 
