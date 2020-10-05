@@ -24,8 +24,8 @@
 
     mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
 
-    renderpins(sampleAds);
-    renderPopup(sampleAds[0]);
+    renderPins(sampleAds);
+    renderPopup(sampleAds.get(1));
     enableFilters();
   };
 
@@ -83,13 +83,13 @@
     return coords;
   };
 
-  const renderpins = (ads) => {
+  const renderPins = (ads) => {
     const pinTemplate = document
       .querySelector(`#pin`)
       .content.querySelector(`.map__pin`);
 
     const fragment = document.createDocumentFragment();
-    ads.forEach((ad) => fragment.appendChild(window.pin.create(pinTemplate, ad)));
+    ads.forEach((ad, key) => fragment.appendChild(window.pin.create(pinTemplate, ad, key)));
 
     const mapPins = document.querySelector(`.map__pins`);
     mapPins.appendChild(fragment);

@@ -61,7 +61,7 @@
   };
 
   const mockAds = (length = MOCK_ELEMENTS_COUNT) => {
-    const ads = [];
+    const ads = new Map();
 
     for (let i = 1; i <= length; i++) {
       const locationX = window.util.getRandomInRange(AD_ACCOMODATION_LOCATION_X_MIN, AD_ACCOMODATION_LOCATION_X_MAX);
@@ -90,7 +90,7 @@
         }
       };
 
-      ads.push(ad);
+      ads.set(i, ad);
     }
     return ads;
   };
