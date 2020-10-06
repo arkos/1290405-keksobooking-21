@@ -7,18 +7,24 @@
     map.removeOnMainPinMouseDown(onMainPinInactiveMouseDown);
     map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
 
-    map.addOnMainPinMouseDown(onMainPinActiveMouseDown);
-
     map.show();
     form.enable();
+
+    document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   const deactivatePage = () => {
     map.hide();
     form.disable();
+
+    document.removeEventListener(`keydown`, onEscKeyDown);
   };
 
   // Event handlers
+
+  const onEscKeyDown = (evt) => {
+    util.isEscEvent(evt, map.closePopup);
+  };
 
   const onMainPinInactiveMouseDown = (evt) => {
     util.isMainMouseButtonEvent(evt, activatePage);
@@ -26,10 +32,6 @@
 
   const onMainPinInactiveKeyDown = (evt) => {
     util.isEnterEvent(evt, activatePage);
-  };
-
-  const onMainPinActiveMouseDown = () => {
-    // Placeholder to support main pin dragging across the map
   };
 
   // Main script
