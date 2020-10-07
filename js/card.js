@@ -2,8 +2,6 @@
 
 (() => {
 
-  const {util} = window;
-
   const AD_ACCOMODATION_TYPES_RU = {
     [`palace`]: `Дворец`,
     [`flat`]: `Квартира`,
