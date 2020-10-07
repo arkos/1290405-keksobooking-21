@@ -69,10 +69,8 @@
   };
 
   const renderPopup = (ad) => {
-    const popupTemplate = document
-      .querySelector(`#card`)
-      .content.querySelector(`.map__card`);
-    map.insertBefore(card.create(popupTemplate, ad), mapFiltersContainer);
+    const popup = card.create(ad);
+    card.open(popup, mapFiltersContainer);
   };
 
   const getMainPinCoords = () => {
@@ -102,11 +100,11 @@
   };
 
   const onMapMouseDown = (evt) => {
-    util.isMainMouseButtonEvent(evt, () => handlePopup(evt));
+    util.isMainMouseButtonEvent(evt, () => openPopup(evt));
   };
 
   const onMapKeyDown = (evt) => {
-    util.isEnterEvent(evt, () => handlePopup(evt));
+    util.isEnterEvent(evt, () => openPopup(evt));
   };
 
   const closePopup = (popup) => {
@@ -115,11 +113,11 @@
     }
 
     if (popup) {
-      popup.remove();
+      card.close(popup);
     }
   };
 
-  const handlePopup = (evt) => {
+  const openPopup = (evt) => {
     const {target} = evt;
 
     const isPin = target.classList.contains(`map__pin`);

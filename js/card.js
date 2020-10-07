@@ -9,8 +9,12 @@
     [`bungalow`]: `Бунгало`
   };
 
-  const create = (adTemplate, ad) => {
-    const popup = adTemplate.cloneNode(true);
+  const popupTemplate = document
+    .querySelector(`#card`)
+    .content.querySelector(`.map__card`);
+
+  const create = (ad) => {
+    const popup = popupTemplate.cloneNode(true);
 
     const popupTitle = popup.querySelector(`.popup__title`);
     popupTitle.textContent = ad.offer.title;
@@ -102,6 +106,10 @@
     popupFeatures.appendChild(fragment);
   };
 
+  const open = (popup, elementBefore) => {
+    elementBefore.before(popup);
+  };
+
   const close = (popup) => {
     if (popup) {
       popup.remove();
@@ -112,7 +120,8 @@
 
   window.card = {
     create,
-    close
+    close,
+    open
   };
 
 })();
