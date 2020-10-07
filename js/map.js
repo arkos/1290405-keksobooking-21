@@ -8,7 +8,7 @@
   const map = document.querySelector(`.map`);
   const mapPinMain = map.querySelector(`.map__pin--main`);
 
-  const {util} = window;
+  const {util, card} = window;
 
   const mapFiltersContainer = document.querySelector(`.map__filters-container`);
   const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
@@ -72,7 +72,7 @@
     const popupTemplate = document
       .querySelector(`#card`)
       .content.querySelector(`.map__card`);
-    map.insertBefore(window.card.create(popupTemplate, ad), mapFiltersContainer);
+    map.insertBefore(card.create(popupTemplate, ad), mapFiltersContainer);
   };
 
   const getMainPinCoords = () => {

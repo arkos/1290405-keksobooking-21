@@ -102,10 +102,17 @@
     popupFeatures.appendChild(fragment);
   };
 
+  const close = (popup) => {
+    if (popup) {
+      popup.remove();
+    }
+  };
+
   const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
 
   window.card = {
-    create
+    create,
+    close
   };
 
 })();
