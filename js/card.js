@@ -2,6 +2,8 @@
 
 (() => {
 
+  const {util} = window;
+
   const AD_ACCOMODATION_TYPES_RU = {
     [`palace`]: `Дворец`,
     [`flat`]: `Квартира`,
@@ -108,12 +110,20 @@
 
   const open = (popup, elementBefore) => {
     elementBefore.before(popup);
+    const popupClose = popup.querySelector(`.popup__close`);
+    popupClose.addEventListener(`click`, onPopupCloseClick);
   };
 
   const close = (popup) => {
     if (popup) {
+      const popupClose = popup.querySelector(`.popup__close`);
+      popupClose.removeEventListener(`click`, onPopupCloseClick);
       popup.remove();
     }
+  };
+
+  const onPopupCloseClick = (evt) => {
+    close(evt.target.parentElement);
   };
 
   const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
