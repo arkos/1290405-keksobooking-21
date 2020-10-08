@@ -22,6 +22,8 @@
   const price = adForm.querySelector(`#price`);
   const roomsNumber = adForm.querySelector(`#room_number`);
   const guestsNumber = adForm.querySelector(`#capacity`);
+  const checkIn = adForm.querySelector(`#timein`);
+  const checkOut = adForm.querySelector(`#timeout`);
 
   const enable = () => {
     adForm.classList.remove(`ad-form--disabled`);
@@ -32,6 +34,9 @@
     price.addEventListener(`input`, onPriceInput);
 
     type.addEventListener(`change`, onTypeChange);
+
+    checkIn.addEventListener(`change`, onCheckInChange);
+    checkOut.addEventListener(`change`, onCheckOutChange);
 
     roomsNumber.addEventListener(`change`, onRoomsNumberChange);
     guestsNumber.addEventListener(`change`, onGuestNumberChange);
@@ -54,6 +59,9 @@
 
     type.removeEventListener(`change`, onTypeChange);
     price.removeEventListener(`change`, onPriceChange);
+
+    checkIn.removeEventListener(`change`, onCheckInChange);
+    checkOut.removeEventListener(`change`, onCheckOutChange);
 
     roomsNumber.removeEventListener(`change`, onRoomsNumberChange);
     guestsNumber.removeEventListener(`change`, onGuestNumberChange);
@@ -157,6 +165,22 @@
         filter.disabled = true;
       }
     }
+  };
+
+  const syncCheckIn = () => {
+    checkIn.value = checkOut.value;
+  };
+
+  const syncCheckOut = () => {
+    checkOut.value = checkIn.value;
+  };
+
+  const onCheckInChange = () => {
+    syncCheckOut();
+  };
+
+  const onCheckOutChange = () => {
+    syncCheckIn();
   };
 
   const setMainPinCoordinates = () => {
