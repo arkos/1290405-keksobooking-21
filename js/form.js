@@ -145,13 +145,17 @@
 
   const enableFilters = () => {
     for (const filter of adForm.children) {
-      filter.disabled = false;
+      if (!filter.matches(`#address`)) {
+        filter.disabled = false;
+      }
     }
   };
 
   const disableFilters = () => {
     for (const filter of adForm.children) {
-      filter.disabled = true;
+      if (!filter.matches(`#address`)) {
+        filter.disabled = true;
+      }
     }
   };
 
