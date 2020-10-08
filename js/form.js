@@ -137,6 +137,7 @@
     }
 
     if (price.validity.valueMissing || price.validity.rangeOverflow) {
+      price.reportValidity();
       return;
     }
 
