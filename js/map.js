@@ -5,6 +5,8 @@
   const MAIN_PIN_ACTIVE_HEIGHT = 84;
   const MAIN_PIN_INACTIVE_HEIGHT = 65;
 
+  const SOURCE_DATA_URL = `https://21.javascript.pages.academy/keksobooking/data`;
+
   const map = document.querySelector(`.map`);
   const mapPinMain = map.querySelector(`.map__pin--main`);
 
@@ -22,8 +24,7 @@
 
   const show = () => {
     map.classList.remove(`map--faded`);
-    http.addOnSuccess(loadData);
-    http.load();
+    http.load(SOURCE_DATA_URL, onLoadSuccess, onLoadFailure);
     map.addEventListener(`mousedown`, onMapMouseDown);
     map.addEventListener(`keydown`, onMapKeyDown);
   };
@@ -134,11 +135,15 @@
     renderPopup(popupData);
   };
 
-  const loadData = (data) => {
+  const onLoadSuccess = (data) => {
     ads = createAds(data);
     mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
     renderPins(ads);
     enableFilters();
+  };
+
+  const onLoadFailure = () => {
+    // Future error handling
   };
 
   const createAds = (data) => {
