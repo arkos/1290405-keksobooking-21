@@ -8,7 +8,7 @@
   const map = document.querySelector(`.map`);
   const mapPinMain = map.querySelector(`.map__pin--main`);
 
-  const {util, card} = window;
+  const {util, card, http} = window;
 
   const mapFiltersContainer = document.querySelector(`.map__filters-container`);
   const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
@@ -18,16 +18,12 @@
     y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2),
   };
 
-  const sampleAds = window.data.mockAds();
+  let ads;
 
   const show = () => {
     map.classList.remove(`map--faded`);
-
-    mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
-
-    renderPins(sampleAds);
-    enableFilters();
-
+    http.addOnSuccess(loadData);
+    http.load();
     map.addEventListener(`mousedown`, onMapMouseDown);
     map.addEventListener(`keydown`, onMapKeyDown);
   };
@@ -85,7 +81,7 @@
     return coords;
   };
 
-  const renderPins = (ads) => {
+  const renderPins = () => {
     const pinTemplate = document
       .querySelector(`#pin`)
       .content.querySelector(`.map__pin`);
@@ -134,8 +130,27 @@
       return;
     }
 
-    const popupData = sampleAds.get(+pinElement.dataset.key);
+    const popupData = ads.get(+pinElement.dataset.key);
     renderPopup(popupData);
+  };
+
+  const loadData = (data) => {
+    ads = createAds(data);
+    mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
+    renderPins(ads);
+    enableFilters();
+  };
+
+  const createAds = (data) => {
+    if (!data || data.length === 0) {
+      return null;
+    }
+
+    const storage = new Map();
+    for (let i = 1; i <= data.length; i++) {
+      storage.set(i, data[i - 1]);
+    }
+    return storage;
   };
 
   window.map = {
