@@ -8,13 +8,15 @@
   const XHR_ERROR_CODE_404 = `Ничего не найдено`;
   const XHR_ERROR_GENERIC = `Произошла ошибка соединения`;
 
+  let onSuccess;
+  let onFailure;
 
   const load = () => {
     const xhr = new XMLHttpRequest();
     xhr.responseType = `json`;
     xhr.addEventListener(`load`, () => onLoad(xhr));
     xhr.addEventListener(`error`, onError);
-    xhr.addEventListener(`load`, () => onTimeout(xhr));
+    xhr.addEventListener(`timeout`, () => onTimeout(xhr));
 
     xhr.open(`GET`, XHR_SOURCE_DATA_URL);
     xhr.send();
@@ -45,11 +47,15 @@
     }
   };
 
+  const addOnSuccess = (cb) => {
+    onSuccess = cb;
+  };
+
+  const addOnFailure = (cb) => {
+    onFailure = cb;
+  };
+
   const getDefaultResponse = (xhr) => `Статус ответа: ${xhr.status} ${xhr.statusText}`;
-
-  const onSuccess = (data) => data;
-
-  const onFailure = (message) => message;
 
   const onError = () => XHR_ERROR_GENERIC;
 
@@ -58,9 +64,8 @@
   };
 
   window.http = {
-    load
+    load,
+    addOnSuccess,
+    addOnFailure
   };
-
-  load();
-
 })();
