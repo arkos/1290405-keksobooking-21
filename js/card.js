@@ -79,10 +79,10 @@
     photos.forEach((photo) => {
       let currentPhoto = popupPhoto.cloneNode();
       currentPhoto.src = photo;
-      fragment.appendChild(currentPhoto);
+      fragment.append(currentPhoto);
     });
 
-    popupPhotos.appendChild(fragment);
+    popupPhotos.append(fragment);
   };
 
   const renderFeatures = (adElement, features) => {
@@ -100,10 +100,10 @@
       let featureElement = document.createElement(`li`);
       let classes = [`popup__feature`, `popup__feature--${feature}`];
       featureElement.classList.add(...classes);
-      fragment.appendChild(featureElement);
+      fragment.append(featureElement);
     });
 
-    popupFeatures.appendChild(fragment);
+    popupFeatures.append(fragment);
   };
 
   const open = (popup, elementBefore) => {

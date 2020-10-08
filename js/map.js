@@ -92,11 +92,11 @@
 
     const fragment = document.createDocumentFragment();
     ads.forEach((ad, key) =>
-      fragment.appendChild(window.pin.create(pinTemplate, ad, key))
+      fragment.append(window.pin.create(pinTemplate, ad, key))
     );
 
     const mapPins = document.querySelector(`.map__pins`);
-    mapPins.appendChild(fragment);
+    mapPins.append(fragment);
   };
 
   const onMapMouseDown = (evt) => {
