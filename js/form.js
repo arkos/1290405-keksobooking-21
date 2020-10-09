@@ -188,7 +188,7 @@
 
   const setMainPinCoordinates = () => {
     const addressElement = document.querySelector(`#address`);
-    const {x, y} = window.map.getMainPinCoords();
+    const {x, y} = window.map.getMainPinPointerCoords();
     addressElement.value = `${x}, ${y}`;
   };
 

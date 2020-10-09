@@ -7,10 +7,10 @@
 
   const SOURCE_DATA_URL = `https://21.javascript.pages.academy/keksobooking/data`;
 
-  const map = document.querySelector(`.map`);
-  const mapPinMain = map.querySelector(`.map__pin--main`);
-
   const {util, card, http} = window;
+
+  const map = document.querySelector(`.map`);
+  const mapMainPin = map.querySelector(`.map__pin--main`);
 
   const mapFiltersContainer = document.querySelector(`.map__filters-container`);
   const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
@@ -27,6 +27,7 @@
     http.load(SOURCE_DATA_URL, onLoadSuccess, onLoadFailure);
     map.addEventListener(`mousedown`, onMapMouseDown);
     map.addEventListener(`keydown`, onMapKeyDown);
+    mapMainPin.addEventListener(`mousedown`, onMainPinMouseDown);
   };
 
   const hide = () => {
@@ -50,19 +51,19 @@
   };
 
   const addOnMainPinMouseDown = (cb) => {
-    mapPinMain.addEventListener(`mousedown`, cb);
+    mapMainPin.addEventListener(`mousedown`, cb);
   };
 
   const addOnMainPinKeyDown = (cb) => {
-    mapPinMain.addEventListener(`keydown`, cb);
+    mapMainPin.addEventListener(`keydown`, cb);
   };
 
   const removeOnMainPinMouseDown = (cb) => {
-    mapPinMain.removeEventListener(`mousedown`, cb);
+    mapMainPin.removeEventListener(`mousedown`, cb);
   };
 
   const removeOnMainPinKeyDown = (cb) => {
-    mapPinMain.removeEventListener(`keydown`, cb);
+    mapMainPin.removeEventListener(`keydown`, cb);
   };
 
   const renderPopup = (ad) => {
@@ -70,11 +71,11 @@
     card.open(popup, mapFiltersContainer);
   };
 
-  const getMainPinCoords = () => {
+  const getMainPinPointerCoords = () => {
     const coords = {};
 
-    const mainPinLeft = parseInt(mapPinMain.style.left, 10);
-    const mainPinTop = parseInt(mapPinMain.style.top, 10);
+    const mainPinLeft = parseInt(mapMainPin.style.left, 10);
+    const mainPinTop = parseInt(mapMainPin.style.top, 10);
 
     coords.x = mainPinLeft + mainPinPointer.x;
     coords.y = mainPinTop + mainPinPointer.y;
@@ -102,6 +103,38 @@
 
   const onMapKeyDown = (evt) => {
     util.isEnterEvent(evt, () => openPopup(evt));
+  };
+
+  const onMainPinMouseDown = (evt) => {
+    evt.preventDefault();
+
+    const startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    const onMouseMove = (moveEvt) => {
+      const shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords.x = moveEvt.clientX;
+      startCoords.y = moveEvt.clientY;
+
+      mapMainPin.style.left = `${mapMainPin.offsetLeft - shift.x}px`;
+      mapMainPin.style.top = `${mapMainPin.offsetTop - shift.y}px`;
+    };
+
+    const onMouseUp = (upEvt) => {
+      upEvt.preventDefault();
+      document.removeEventListener(`mousemove`, onMouseMove);
+      document.removeEventListener(`mouseup`, onMouseUp);
+    };
+
+
+    document.addEventListener(`mousemove`, onMouseMove);
+    document.addEventListener(`mouseup`, onMouseUp);
   };
 
   const closePopup = (popup) => {
@@ -165,7 +198,7 @@
     addOnMainPinKeyDown,
     removeOnMainPinMouseDown,
     removeOnMainPinKeyDown,
-    getMainPinCoords,
+    getMainPinPointerCoords,
     closePopup
   };
 })();
