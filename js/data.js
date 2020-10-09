@@ -1,29 +1,15 @@
-'use strict';
+"use strict";
 
 (() => {
-
   const INDEX_PAD_LENGTH = 2;
 
   const MOCK_ELEMENTS_COUNT = 8;
 
-  const AD_ACCOMODATION_TYPES = [
-    `palace`,
-    `flat`,
-    `house`,
-    `bungalow`
-  ];
+  const AD_ACCOMODATION_TYPES = [`palace`, `flat`, `house`, `bungalow`];
 
-  const AD_CHECKIN_TIMES = [
-    `12:00`,
-    `13:00`,
-    `14:00`
-  ];
+  const AD_CHECKIN_TIMES = [`12:00`, `13:00`, `14:00`];
 
-  const AD_CHECKOUT_TIMES = [
-    `12:00`,
-    `13:00`,
-    `14:00`
-  ];
+  const AD_CHECKOUT_TIMES = [`12:00`, `13:00`, `14:00`];
 
   const AD_ACCOMODATION_FEATURES = [
     `wifi`,
@@ -31,7 +17,7 @@
     `parking`,
     `washer`,
     `elevator`,
-    `conditioner`
+    `conditioner`,
   ];
 
   const AD_ACCOMODATION_PRICE_MIN = 500;
@@ -46,7 +32,7 @@
   const AD_ACCOMODATION_PHOTOS = [
     `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
     `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
-    `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
+    `http://o0.github.io/assets/images/tokyo/hotel3.jpg`,
   ];
 
   const AD_ACCOMODATION_LOCATION_X_MIN = 0;
@@ -61,7 +47,7 @@
   };
 
   const mockAds = (length = MOCK_ELEMENTS_COUNT) => {
-    const ads = [];
+    const ads = new Map();
 
     for (let i = 1; i <= length; i++) {
       const locationX = window.util.getRandomInRange(AD_ACCOMODATION_LOCATION_X_MIN, AD_ACCOMODATION_LOCATION_X_MAX);
@@ -69,7 +55,7 @@
 
       const ad = {
         author: {
-          avatar: mockAvatar(i)
+          avatar: mockAvatar(i),
         },
         offer: {
           title: `Title number #${i}`,
@@ -82,23 +68,20 @@
           checkout: window.util.getRandomItem(AD_CHECKOUT_TIMES),
           features: window.util.getRandomItems(AD_ACCOMODATION_FEATURES),
           description: `Description number #${i}`,
-          photos: window.util.getRandomItems(AD_ACCOMODATION_PHOTOS)
+          photos: window.util.getRandomItems(AD_ACCOMODATION_PHOTOS),
         },
         location: {
           x: locationX,
-          y: locationY
-        }
+          y: locationY,
+        },
       };
 
-      ads.push(ad);
+      ads.set(i, ad);
     }
     return ads;
   };
 
-
   window.data = {
-    mockAds
+    mockAds,
   };
-
 })();
-

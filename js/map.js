@@ -1,7 +1,6 @@
-'use strict';
+"use strict";
 
 (() => {
-
   const MAIN_PIN_WIDTH = 65;
   const MAIN_PIN_ACTIVE_HEIGHT = 84;
   const MAIN_PIN_INACTIVE_HEIGHT = 65;
@@ -9,12 +8,14 @@
   const map = document.querySelector(`.map`);
   const mapPinMain = map.querySelector(`.map__pin--main`);
 
+  const {util, card} = window;
+
   const mapFiltersContainer = document.querySelector(`.map__filters-container`);
   const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
 
   const mainPinPointer = {
     x: Math.floor(MAIN_PIN_WIDTH / 2),
-    y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2)
+    y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2),
   };
 
   const sampleAds = window.data.mockAds();
@@ -24,9 +25,11 @@
 
     mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
 
-    renderpins(sampleAds);
-    renderPopup(sampleAds[0]);
+    renderPins(sampleAds);
     enableFilters();
+
+    map.addEventListener(`mousedown`, onMapMouseDown);
+    map.addEventListener(`keydown`, onMapKeyDown);
   };
 
   const hide = () => {
@@ -35,7 +38,6 @@
     mainPinPointer.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
 
     disableFilters();
-
   };
 
   const enableFilters = () => {
@@ -67,8 +69,8 @@
   };
 
   const renderPopup = (ad) => {
-    const popupTemplate = document.querySelector(`#card`).content.querySelector(`.map__card`);
-    map.insertBefore(window.card.create(popupTemplate, ad), mapFiltersContainer);
+    const popup = card.create(ad);
+    card.open(popup, mapFiltersContainer);
   };
 
   const getMainPinCoords = () => {
@@ -83,16 +85,57 @@
     return coords;
   };
 
-  const renderpins = (ads) => {
+  const renderPins = (ads) => {
     const pinTemplate = document
       .querySelector(`#pin`)
       .content.querySelector(`.map__pin`);
 
     const fragment = document.createDocumentFragment();
-    ads.forEach((ad) => fragment.appendChild(window.pin.create(pinTemplate, ad)));
+    ads.forEach((ad, key) =>
+      fragment.append(window.pin.create(pinTemplate, ad, key))
+    );
 
     const mapPins = document.querySelector(`.map__pins`);
-    mapPins.appendChild(fragment);
+    mapPins.append(fragment);
+  };
+
+  const onMapMouseDown = (evt) => {
+    util.isMainMouseButtonEvent(evt, () => openPopup(evt));
+  };
+
+  const onMapKeyDown = (evt) => {
+    util.isEnterEvent(evt, () => openPopup(evt));
+  };
+
+  const closePopup = (popup) => {
+    if (!popup) {
+      popup = map.querySelector(`.map__card`);
+    }
+
+    if (popup) {
+      card.close(popup);
+    }
+  };
+
+  const openPopup = (evt) => {
+    const {target} = evt;
+
+    const isPin = target.classList.contains(`map__pin`);
+    const isPinImg = target.matches(`.map__pin img`);
+
+    if (!isPin && !isPinImg) {
+      return;
+    }
+
+    closePopup();
+
+    const pinElement = isPinImg ? target.parentElement : target;
+    if (pinElement.classList.contains(`map__pin--main`)) {
+      return;
+    }
+
+    const popupData = sampleAds.get(+pinElement.dataset.key);
+    renderPopup(popupData);
   };
 
   window.map = {
@@ -102,8 +145,7 @@
     addOnMainPinKeyDown,
     removeOnMainPinMouseDown,
     removeOnMainPinKeyDown,
-    getMainPinCoords
+    getMainPinCoords,
+    closePopup
   };
-
 })();
-

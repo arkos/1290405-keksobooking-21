@@ -5,8 +5,10 @@
   const MAP_PIN_WIDTH = 50;
   const MAP_PIN_HEIGHT = 70;
 
-  const create = (pinTemplate, ad) => {
+  const create = (pinTemplate, ad, key) => {
     const pin = pinTemplate.cloneNode(true);
+
+    pin.dataset.key = key;
 
     const pinLeftPosition = ad.location.x - Math.floor(MAP_PIN_WIDTH / 2);
     const pinTopPosition = ad.location.y - MAP_PIN_HEIGHT;

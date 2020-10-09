@@ -9,8 +9,12 @@
     [`bungalow`]: `Бунгало`
   };
 
-  const create = (adTemplate, ad) => {
-    const popup = adTemplate.cloneNode(true);
+  const popupTemplate = document
+    .querySelector(`#card`)
+    .content.querySelector(`.map__card`);
+
+  const create = (ad) => {
+    const popup = popupTemplate.cloneNode(true);
 
     const popupTitle = popup.querySelector(`.popup__title`);
     popupTitle.textContent = ad.offer.title;
@@ -75,10 +79,10 @@
     photos.forEach((photo) => {
       let currentPhoto = popupPhoto.cloneNode();
       currentPhoto.src = photo;
-      fragment.appendChild(currentPhoto);
+      fragment.append(currentPhoto);
     });
 
-    popupPhotos.appendChild(fragment);
+    popupPhotos.append(fragment);
   };
 
   const renderFeatures = (adElement, features) => {
@@ -96,16 +100,36 @@
       let featureElement = document.createElement(`li`);
       let classes = [`popup__feature`, `popup__feature--${feature}`];
       featureElement.classList.add(...classes);
-      fragment.appendChild(featureElement);
+      fragment.append(featureElement);
     });
 
-    popupFeatures.appendChild(fragment);
+    popupFeatures.append(fragment);
+  };
+
+  const open = (popup, elementBefore) => {
+    elementBefore.before(popup);
+    const popupClose = popup.querySelector(`.popup__close`);
+    popupClose.addEventListener(`click`, onPopupCloseClick);
+  };
+
+  const close = (popup) => {
+    if (popup) {
+      const popupClose = popup.querySelector(`.popup__close`);
+      popupClose.removeEventListener(`click`, onPopupCloseClick);
+      popup.remove();
+    }
+  };
+
+  const onPopupCloseClick = (evt) => {
+    close(evt.target.parentElement);
   };
 
   const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
 
   window.card = {
-    create
+    create,
+    close,
+    open
   };
 
 })();
