@@ -5,6 +5,11 @@
   const MAIN_PIN_ACTIVE_HEIGHT = 84;
   const MAIN_PIN_INACTIVE_HEIGHT = 65;
 
+  const MAP_COORD_MIN_X = 0;
+  const MAP_COORD_MAX_X = 1200;
+  const MAP_COORD_MIN_Y = 130;
+  const MAP_COORD_MAX_Y = 630;
+
   const SOURCE_DATA_URL = `https://21.javascript.pages.academy/keksobooking/data`;
 
   const {util, card, http} = window;
@@ -26,9 +31,13 @@
 
   const show = () => {
     map.classList.remove(`map--faded`);
+
     mainPinPointer.y = Math.floor(MAIN_PIN_ACTIVE_HEIGHT);
+
     sendMainPinUpdated(getMainPinPointerCoords());
+
     http.load(SOURCE_DATA_URL, onLoadSuccess, onLoadFailure);
+
     map.addEventListener(`mousedown`, onMapMouseDown);
     map.addEventListener(`keydown`, onMapKeyDown);
     mapMainPin.addEventListener(`mousedown`, onMainPinMouseDown);
@@ -36,7 +45,9 @@
 
   const hide = () => {
     map.classList.add(`map--faded`);
+
     mainPinPointer.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
+
     sendMainPinUpdated(getMainPinPointerCoords());
     disableFilters();
   };
@@ -122,19 +133,27 @@
         y: startCoords.y - moveEvt.clientY
       };
 
-      startCoords.x = moveEvt.clientX;
-      startCoords.y = moveEvt.clientY;
+      const {x, y} = getMainPinPointerCoords();
 
-      mapMainPin.style.left = `${mapMainPin.offsetLeft - shift.x}px`;
-      mapMainPin.style.top = `${mapMainPin.offsetTop - shift.y}px`;
+      if (x - shift.x >= MAP_COORD_MIN_X && x - shift.x <= MAP_COORD_MAX_X) {
+        startCoords.x = moveEvt.clientX;
+        mapMainPin.style.left = `${mapMainPin.offsetLeft - shift.x}px`;
+      }
+
+      if (y - shift.y >= MAP_COORD_MIN_Y && y - shift.y <= MAP_COORD_MAX_Y) {
+        startCoords.y = moveEvt.clientY;
+        mapMainPin.style.top = `${mapMainPin.offsetTop - shift.y}px`;
+      }
+
+      sendMainPinUpdated(getMainPinPointerCoords());
     };
 
     const onMouseUp = (upEvt) => {
       upEvt.preventDefault();
+      sendMainPinUpdated(getMainPinPointerCoords());
       document.removeEventListener(`mousemove`, onMouseMove);
       document.removeEventListener(`mouseup`, onMouseUp);
     };
-
 
     document.addEventListener(`mousemove`, onMouseMove);
     document.addEventListener(`mouseup`, onMouseUp);
