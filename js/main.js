@@ -7,15 +7,15 @@
     map.removeOnMainPinMouseDown(onMainPinInactiveMouseDown);
     map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
 
-    map.show();
     form.enable();
+    map.show();
 
     document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   const deactivatePage = () => {
-    map.hide();
     form.disable();
+    map.hide();
 
     document.removeEventListener(`keydown`, onEscKeyDown);
   };

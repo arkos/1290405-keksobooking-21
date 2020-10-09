@@ -16,6 +16,8 @@
     [`palace`]: 10000
   };
 
+  const {map} = window;
+
   const adForm = document.querySelector(`.ad-form`);
   const title = adForm.querySelector(`#title`);
   const type = adForm.querySelector(`#type`);
@@ -24,6 +26,7 @@
   const guestsNumber = adForm.querySelector(`#capacity`);
   const checkIn = adForm.querySelector(`#timein`);
   const checkOut = adForm.querySelector(`#timeout`);
+  const address = document.querySelector(`#address`);
 
   const enable = () => {
     adForm.classList.remove(`ad-form--disabled`);
@@ -42,7 +45,7 @@
     guestsNumber.addEventListener(`change`, onGuestNumberChange);
 
     enableFilters();
-    setMainPinCoordinates();
+    map.subscribeToMainPinUpdates(setMainPinCoordinates);
 
     setCapacityValidity(roomsNumber);
     setPriceAttributes();
@@ -67,7 +70,7 @@
     guestsNumber.removeEventListener(`change`, onGuestNumberChange);
 
     disableFilters();
-    setMainPinCoordinates();
+    map.subscribeToMainPinUpdates(setMainPinCoordinates);
   };
 
   const setPriceAttributes = () => {
@@ -186,10 +189,9 @@
     syncCheckIn();
   };
 
-  const setMainPinCoordinates = () => {
-    const addressElement = document.querySelector(`#address`);
-    const {x, y} = window.map.getMainPinPointerCoords();
-    addressElement.value = `${x}, ${y}`;
+  const setMainPinCoordinates = (coords) => {
+    const {x, y} = coords;
+    address.value = `${x}, ${y}`;
   };
 
   window.form = {

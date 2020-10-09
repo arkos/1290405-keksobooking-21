@@ -20,10 +20,13 @@
     y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2),
   };
 
+  let sendMainPinUpdated;
+
   let ads;
 
   const show = () => {
     map.classList.remove(`map--faded`);
+    sendMainPinUpdated(getMainPinPointerCoords());
     http.load(SOURCE_DATA_URL, onLoadSuccess, onLoadFailure);
     map.addEventListener(`mousedown`, onMapMouseDown);
     map.addEventListener(`keydown`, onMapKeyDown);
@@ -32,9 +35,8 @@
 
   const hide = () => {
     map.classList.add(`map--faded`);
-
     mainPinPointer.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
-
+    sendMainPinUpdated(getMainPinPointerCoords());
     disableFilters();
   };
 
@@ -191,6 +193,10 @@
     return storage;
   };
 
+  const subscribeToMainPinUpdates = (cb) => {
+    sendMainPinUpdated = cb;
+  };
+
   window.map = {
     show,
     hide,
@@ -198,7 +204,7 @@
     addOnMainPinKeyDown,
     removeOnMainPinMouseDown,
     removeOnMainPinKeyDown,
-    getMainPinPointerCoords,
+    subscribeToMainPinUpdates,
     closePopup
   };
 })();
