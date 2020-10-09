@@ -26,6 +26,7 @@
 
   const show = () => {
     map.classList.remove(`map--faded`);
+    mainPinPointer.y = Math.floor(MAIN_PIN_ACTIVE_HEIGHT);
     sendMainPinUpdated(getMainPinPointerCoords());
     http.load(SOURCE_DATA_URL, onLoadSuccess, onLoadFailure);
     map.addEventListener(`mousedown`, onMapMouseDown);
