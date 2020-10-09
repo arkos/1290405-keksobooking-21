@@ -45,7 +45,7 @@
     setMainPinCoordinates();
 
     setCapacityValidity(roomsNumber);
-    setPricePlaceholder();
+    setPriceAttributes();
     setPriceValidity(type);
   };
 
@@ -70,8 +70,10 @@
     setMainPinCoordinates();
   };
 
-  const setPricePlaceholder = () => {
-    price.placeholder = PRICE_RULES_MAP[type.value];
+  const setPriceAttributes = () => {
+    const priceValue = PRICE_RULES_MAP[type.value];
+    price.placeholder = priceValue;
+    price.min = priceValue;
   };
 
   const validateRoomCapacity = (rooms, guests) => CAPACITY_RULES_MAP[rooms].includes(guests);
@@ -118,7 +120,7 @@
   };
 
   const onTypeChange = () => {
-    setPricePlaceholder();
+    setPriceAttributes();
     setPriceValidity();
   };
 
@@ -135,6 +137,7 @@
     }
 
     if (price.validity.valueMissing || price.validity.rangeOverflow) {
+      price.reportValidity();
       return;
     }
 
