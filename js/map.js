@@ -133,19 +133,31 @@
         y: startCoords.y - moveEvt.clientY
       };
 
-      const {x, y} = getMainPinPointerCoords();
+      const {x: currentPointerLeft, y: currentPointerTop} = getMainPinPointerCoords();
 
-      if (x - shift.x >= MAP_COORD_MIN_X && x - shift.x <= MAP_COORD_MAX_X) {
-        startCoords.x = moveEvt.clientX;
-        mapMainPin.style.left = `${mapMainPin.offsetLeft - shift.x}px`;
+      let movePointerLeftTo = currentPointerLeft - shift.x;
+      let movePointerTopTo = currentPointerTop - shift.y;
+
+      if (movePointerLeftTo < MAP_COORD_MIN_X) {
+        movePointerLeftTo = MAP_COORD_MIN_X;
+      } else if (movePointerLeftTo > MAP_COORD_MAX_X) {
+        movePointerLeftTo = MAP_COORD_MAX_X;
       }
 
-      if (y - shift.y >= MAP_COORD_MIN_Y && y - shift.y <= MAP_COORD_MAX_Y) {
-        startCoords.y = moveEvt.clientY;
-        mapMainPin.style.top = `${mapMainPin.offsetTop - shift.y}px`;
+      if (movePointerTopTo < MAP_COORD_MIN_Y) {
+        movePointerTopTo = MAP_COORD_MIN_Y;
+      } else if (movePointerTopTo > MAP_COORD_MAX_Y) {
+        movePointerTopTo = MAP_COORD_MAX_Y;
       }
 
-      sendMainPinUpdated(getMainPinPointerCoords());
+      startCoords.x = moveEvt.clientX;
+      startCoords.y = moveEvt.clientY;
+
+      if ((currentPointerLeft !== movePointerLeftTo) || (currentPointerTop !== movePointerTopTo)) {
+        moveMainPinPointerTo(movePointerLeftTo, movePointerTopTo);
+        sendMainPinUpdated(getMainPinPointerCoords());
+      }
+
     };
 
     const onMouseUp = (upEvt) => {
@@ -215,6 +227,16 @@
 
   const subscribeToMainPinUpdates = (cb) => {
     sendMainPinUpdated = cb;
+  };
+
+  const moveMainPinPointerTo = (moveLeftTo, moveTopTo) => {
+    const {x: currentLeft, y: currentTop} = getMainPinPointerCoords();
+
+    const shiftLeft = currentLeft - moveLeftTo;
+    const shiftTop = currentTop - moveTopTo;
+
+    mapMainPin.style.left = `${mapMainPin.offsetLeft - shiftLeft}px`;
+    mapMainPin.style.top = `${mapMainPin.offsetTop - shiftTop}px`;
   };
 
   window.map = {
