@@ -15,12 +15,12 @@
   const {util, card, http} = window;
 
   const map = document.querySelector(`.map`);
-  const mapMainPin = map.querySelector(`.map__pin--main`);
+  const mainPin = map.querySelector(`.map__pin--main`);
 
-  const mapFiltersContainer = document.querySelector(`.map__filters-container`);
-  const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
+  const filtersContainer = document.querySelector(`.map__filters-container`);
+  const filters = filtersContainer.querySelector(`.map__filters`);
 
-  const mainPinPointer = {
+  const mainPinSpikeOffset = {
     x: Math.floor(MAIN_PIN_WIDTH / 2),
     y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2),
   };
@@ -32,67 +32,67 @@
   const show = () => {
     map.classList.remove(`map--faded`);
 
-    mainPinPointer.y = Math.floor(MAIN_PIN_ACTIVE_HEIGHT);
+    mainPinSpikeOffset.y = Math.floor(MAIN_PIN_ACTIVE_HEIGHT);
 
-    sendMainPinUpdated(getMainPinPointerCoords());
+    sendMainPinUpdated(getMainPinSpikeCoords());
 
     http.load(SOURCE_DATA_URL, onLoadSuccess, onLoadFailure);
 
     map.addEventListener(`mousedown`, onMapMouseDown);
     map.addEventListener(`keydown`, onMapKeyDown);
-    mapMainPin.addEventListener(`mousedown`, onMainPinMouseDown);
+    mainPin.addEventListener(`mousedown`, onMainPinMouseDown);
   };
 
   const hide = () => {
     map.classList.add(`map--faded`);
 
-    mainPinPointer.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
+    mainPinSpikeOffset.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
 
-    sendMainPinUpdated(getMainPinPointerCoords());
+    sendMainPinUpdated(getMainPinSpikeCoords());
     disableFilters();
   };
 
   const enableFilters = () => {
-    for (const filter of mapFilters.children) {
+    for (const filter of filters.children) {
       filter.disabled = false;
     }
   };
 
   const disableFilters = () => {
-    for (const filter of mapFilters.children) {
+    for (const filter of filters.children) {
       filter.disabled = true;
     }
   };
 
   const addOnMainPinMouseDown = (cb) => {
-    mapMainPin.addEventListener(`mousedown`, cb);
+    mainPin.addEventListener(`mousedown`, cb);
   };
 
   const addOnMainPinKeyDown = (cb) => {
-    mapMainPin.addEventListener(`keydown`, cb);
+    mainPin.addEventListener(`keydown`, cb);
   };
 
   const removeOnMainPinMouseDown = (cb) => {
-    mapMainPin.removeEventListener(`mousedown`, cb);
+    mainPin.removeEventListener(`mousedown`, cb);
   };
 
   const removeOnMainPinKeyDown = (cb) => {
-    mapMainPin.removeEventListener(`keydown`, cb);
+    mainPin.removeEventListener(`keydown`, cb);
   };
 
   const renderPopup = (ad) => {
     const popup = card.create(ad);
-    card.open(popup, mapFiltersContainer);
+    card.open(popup, filtersContainer);
   };
 
-  const getMainPinPointerCoords = () => {
+  const getMainPinSpikeCoords = () => {
     const coords = {};
 
-    const mainPinLeft = parseInt(mapMainPin.style.left, 10);
-    const mainPinTop = parseInt(mapMainPin.style.top, 10);
+    const mainPinLeft = parseInt(mainPin.style.left, 10);
+    const mainPinTop = parseInt(mainPin.style.top, 10);
 
-    coords.x = mainPinLeft + mainPinPointer.x;
-    coords.y = mainPinTop + mainPinPointer.y;
+    coords.x = mainPinLeft + mainPinSpikeOffset.x;
+    coords.y = mainPinTop + mainPinSpikeOffset.y;
 
     return coords;
   };
@@ -133,7 +133,7 @@
         y: startCoords.y - moveEvt.clientY
       };
 
-      const {x: currentPointerLeft, y: currentPointerTop} = getMainPinPointerCoords();
+      const {x: currentPointerLeft, y: currentPointerTop} = getMainPinSpikeCoords();
 
       let movePointerLeftTo = currentPointerLeft - shift.x;
       let movePointerTopTo = currentPointerTop - shift.y;
@@ -154,15 +154,15 @@
       startCoords.y = moveEvt.clientY;
 
       if ((currentPointerLeft !== movePointerLeftTo) || (currentPointerTop !== movePointerTopTo)) {
-        moveMainPinPointerTo(movePointerLeftTo, movePointerTopTo);
-        sendMainPinUpdated(getMainPinPointerCoords());
+        moveMainPinSpikeTo(movePointerLeftTo, movePointerTopTo);
+        sendMainPinUpdated(getMainPinSpikeCoords());
       }
 
     };
 
     const onMouseUp = (upEvt) => {
       upEvt.preventDefault();
-      sendMainPinUpdated(getMainPinPointerCoords());
+      sendMainPinUpdated(getMainPinSpikeCoords());
       document.removeEventListener(`mousemove`, onMouseMove);
       document.removeEventListener(`mouseup`, onMouseUp);
     };
@@ -204,7 +204,7 @@
 
   const onLoadSuccess = (data) => {
     ads = createAds(data);
-    mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
+    mainPinSpikeOffset.y = MAIN_PIN_ACTIVE_HEIGHT;
     renderPins(ads);
     enableFilters();
   };
@@ -229,14 +229,14 @@
     sendMainPinUpdated = cb;
   };
 
-  const moveMainPinPointerTo = (moveLeftTo, moveTopTo) => {
-    const {x: currentLeft, y: currentTop} = getMainPinPointerCoords();
+  const moveMainPinSpikeTo = (moveLeftTo, moveTopTo) => {
+    const {x: currentLeft, y: currentTop} = getMainPinSpikeCoords();
 
     const shiftLeft = currentLeft - moveLeftTo;
     const shiftTop = currentTop - moveTopTo;
 
-    mapMainPin.style.left = `${mapMainPin.offsetLeft - shiftLeft}px`;
-    mapMainPin.style.top = `${mapMainPin.offsetTop - shiftTop}px`;
+    mainPin.style.left = `${mainPin.offsetLeft - shiftLeft}px`;
+    mainPin.style.top = `${mainPin.offsetTop - shiftTop}px`;
   };
 
   window.map = {
