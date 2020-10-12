@@ -5,79 +5,94 @@
   const MAIN_PIN_ACTIVE_HEIGHT = 84;
   const MAIN_PIN_INACTIVE_HEIGHT = 65;
 
-  const SOURCE_DATA_URL = `https://21.javascript.pages.academy/keksobooking/data`;
+  const MAP_COORD_MIN_X = 0;
+  const MAP_COORD_MAX_X = 1200;
+  const MAP_COORD_MIN_Y = 130;
+  const MAP_COORD_MAX_Y = 630;
 
-  const map = document.querySelector(`.map`);
-  const mapPinMain = map.querySelector(`.map__pin--main`);
+  const SOURCE_DATA_URL = `https://21.javascript.pages.academy/keksobooking/data`;
 
   const {util, card, http} = window;
 
-  const mapFiltersContainer = document.querySelector(`.map__filters-container`);
-  const mapFilters = mapFiltersContainer.querySelector(`.map__filters`);
+  const map = document.querySelector(`.map`);
+  const mainPin = map.querySelector(`.map__pin--main`);
 
-  const mainPinPointer = {
+  const filtersContainer = document.querySelector(`.map__filters-container`);
+  const filters = filtersContainer.querySelector(`.map__filters`);
+
+  const mainPinSpikeOffset = {
     x: Math.floor(MAIN_PIN_WIDTH / 2),
     y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2),
   };
+
+  let sendMainPinUpdated;
 
   let ads;
 
   const show = () => {
     map.classList.remove(`map--faded`);
+
+    mainPinSpikeOffset.y = Math.floor(MAIN_PIN_ACTIVE_HEIGHT);
+
+    sendMainPinUpdated(getMainPinSpikeCoords());
+
     http.load(SOURCE_DATA_URL, onLoadSuccess, onLoadFailure);
+
     map.addEventListener(`mousedown`, onMapMouseDown);
     map.addEventListener(`keydown`, onMapKeyDown);
+    mainPin.addEventListener(`mousedown`, onMainPinMouseDown);
   };
 
   const hide = () => {
     map.classList.add(`map--faded`);
 
-    mainPinPointer.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
+    mainPinSpikeOffset.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
 
+    sendMainPinUpdated(getMainPinSpikeCoords());
     disableFilters();
   };
 
   const enableFilters = () => {
-    for (const filter of mapFilters.children) {
+    for (const filter of filters.children) {
       filter.disabled = false;
     }
   };
 
   const disableFilters = () => {
-    for (const filter of mapFilters.children) {
+    for (const filter of filters.children) {
       filter.disabled = true;
     }
   };
 
   const addOnMainPinMouseDown = (cb) => {
-    mapPinMain.addEventListener(`mousedown`, cb);
+    mainPin.addEventListener(`mousedown`, cb);
   };
 
   const addOnMainPinKeyDown = (cb) => {
-    mapPinMain.addEventListener(`keydown`, cb);
+    mainPin.addEventListener(`keydown`, cb);
   };
 
   const removeOnMainPinMouseDown = (cb) => {
-    mapPinMain.removeEventListener(`mousedown`, cb);
+    mainPin.removeEventListener(`mousedown`, cb);
   };
 
   const removeOnMainPinKeyDown = (cb) => {
-    mapPinMain.removeEventListener(`keydown`, cb);
+    mainPin.removeEventListener(`keydown`, cb);
   };
 
   const renderPopup = (ad) => {
     const popup = card.create(ad);
-    card.open(popup, mapFiltersContainer);
+    card.open(popup, filtersContainer);
   };
 
-  const getMainPinCoords = () => {
+  const getMainPinSpikeCoords = () => {
     const coords = {};
 
-    const mainPinLeft = parseInt(mapPinMain.style.left, 10);
-    const mainPinTop = parseInt(mapPinMain.style.top, 10);
+    const mainPinLeft = parseInt(mainPin.style.left, 10);
+    const mainPinTop = parseInt(mainPin.style.top, 10);
 
-    coords.x = mainPinLeft + mainPinPointer.x;
-    coords.y = mainPinTop + mainPinPointer.y;
+    coords.x = mainPinLeft + mainPinSpikeOffset.x;
+    coords.y = mainPinTop + mainPinSpikeOffset.y;
 
     return coords;
   };
@@ -102,6 +117,58 @@
 
   const onMapKeyDown = (evt) => {
     util.isEnterEvent(evt, () => openPopup(evt));
+  };
+
+  const onMainPinMouseDown = (evt) => {
+    evt.preventDefault();
+
+    const startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    const onMouseMove = (moveEvt) => {
+      const shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      const {x: currentPointerLeft, y: currentPointerTop} = getMainPinSpikeCoords();
+
+      let movePointerLeftTo = currentPointerLeft - shift.x;
+      let movePointerTopTo = currentPointerTop - shift.y;
+
+      if (movePointerLeftTo < MAP_COORD_MIN_X) {
+        movePointerLeftTo = MAP_COORD_MIN_X;
+      } else if (movePointerLeftTo > MAP_COORD_MAX_X) {
+        movePointerLeftTo = MAP_COORD_MAX_X;
+      }
+
+      if (movePointerTopTo < MAP_COORD_MIN_Y) {
+        movePointerTopTo = MAP_COORD_MIN_Y;
+      } else if (movePointerTopTo > MAP_COORD_MAX_Y) {
+        movePointerTopTo = MAP_COORD_MAX_Y;
+      }
+
+      startCoords.x = moveEvt.clientX;
+      startCoords.y = moveEvt.clientY;
+
+      if ((currentPointerLeft !== movePointerLeftTo) || (currentPointerTop !== movePointerTopTo)) {
+        moveMainPinSpikeTo(movePointerLeftTo, movePointerTopTo);
+        sendMainPinUpdated(getMainPinSpikeCoords());
+      }
+
+    };
+
+    const onMouseUp = (upEvt) => {
+      upEvt.preventDefault();
+      sendMainPinUpdated(getMainPinSpikeCoords());
+      document.removeEventListener(`mousemove`, onMouseMove);
+      document.removeEventListener(`mouseup`, onMouseUp);
+    };
+
+    document.addEventListener(`mousemove`, onMouseMove);
+    document.addEventListener(`mouseup`, onMouseUp);
   };
 
   const closePopup = (popup) => {
@@ -137,7 +204,7 @@
 
   const onLoadSuccess = (data) => {
     ads = createAds(data);
-    mainPinPointer.y = MAIN_PIN_ACTIVE_HEIGHT;
+    mainPinSpikeOffset.y = MAIN_PIN_ACTIVE_HEIGHT;
     renderPins(ads);
     enableFilters();
   };
@@ -158,6 +225,20 @@
     return storage;
   };
 
+  const subscribeToMainPinUpdates = (cb) => {
+    sendMainPinUpdated = cb;
+  };
+
+  const moveMainPinSpikeTo = (moveLeftTo, moveTopTo) => {
+    const {x: currentLeft, y: currentTop} = getMainPinSpikeCoords();
+
+    const shiftLeft = currentLeft - moveLeftTo;
+    const shiftTop = currentTop - moveTopTo;
+
+    mainPin.style.left = `${mainPin.offsetLeft - shiftLeft}px`;
+    mainPin.style.top = `${mainPin.offsetTop - shiftTop}px`;
+  };
+
   window.map = {
     show,
     hide,
@@ -165,7 +246,7 @@
     addOnMainPinKeyDown,
     removeOnMainPinMouseDown,
     removeOnMainPinKeyDown,
-    getMainPinCoords,
+    subscribeToMainPinUpdates,
     closePopup
   };
 })();
