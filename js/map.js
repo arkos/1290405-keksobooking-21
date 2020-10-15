@@ -10,15 +10,21 @@
   const MAP_COORD_MIN_Y = 130;
   const MAP_COORD_MAX_Y = 630;
 
+  const MAX_PINS_COUNT = 5;
+
   const SOURCE_DATA_URL = `https://21.javascript.pages.academy/keksobooking/data`;
 
-  const {util, card, http} = window;
+  const {util, pin, card, http} = window;
 
   const map = document.querySelector(`.map`);
   const mainPin = map.querySelector(`.map__pin--main`);
 
   const filtersContainer = document.querySelector(`.map__filters-container`);
   const filters = filtersContainer.querySelector(`.map__filters`);
+  const filterByAccType = filters.querySelector(`#housing-type`);
+
+  const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+  const mapPins = document.querySelector(`.map__pins`);
 
   const mainPinSpikeOffset = {
     x: Math.floor(MAIN_PIN_WIDTH / 2),
@@ -56,12 +62,16 @@
     for (const filter of filters.children) {
       filter.disabled = false;
     }
+
+    filterByAccType.addEventListener(`change`, onAccomodationTypeChange);
   };
 
   const disableFilters = () => {
     for (const filter of filters.children) {
       filter.disabled = true;
     }
+
+    filterByAccType.removeEventListener(`change`, onAccomodationTypeChange);
   };
 
   const addOnMainPinMouseDown = (cb) => {
@@ -97,18 +107,34 @@
     return coords;
   };
 
-  const renderPins = () => {
-    const pinTemplate = document
-      .querySelector(`#pin`)
-      .content.querySelector(`.map__pin`);
+  const renderPins = (pinsToRender) => {
+    const pinElements = [];
+    pinsToRender.forEach((pinToRender, key) => pinElements.push(pin.create(pinTemplate, pinToRender, key)));
 
-    const fragment = document.createDocumentFragment();
-    ads.forEach((ad, key) =>
-      fragment.append(window.pin.create(pinTemplate, ad, key))
-    );
+    const currentPinElements = mapPins.querySelectorAll(`.map__pin:not([class*="map__pin--main"])`);
+    currentPinElements.forEach((element) => element.remove());
 
-    const mapPins = document.querySelector(`.map__pins`);
-    mapPins.append(fragment);
+    mapPins.append(...pinElements);
+  };
+
+  const updatePins = () => {
+    const filteredPins = applyFilterToPins();
+    const filteredAds = Array.from(filteredPins).slice(0, MAX_PINS_COUNT);
+    renderPins(new Map(filteredAds));
+  };
+
+  const applyFilterToPins = () => {
+    const fromAds = Array.from(ads);
+    const filteredByAccTypeAds = fromAds.filter((fromAd) => {
+      const ad = fromAd[1];
+      return filterByAccType.value === `any` || filterByAccType.value === ad.offer.type;
+    });
+    return new Map(filteredByAccTypeAds);
+  };
+
+  const onAccomodationTypeChange = () => {
+    updatePins();
+    closePopup();
   };
 
   const onMapMouseDown = (evt) => {
@@ -205,7 +231,7 @@
   const onLoadSuccess = (data) => {
     ads = createAds(data);
     mainPinSpikeOffset.y = MAIN_PIN_ACTIVE_HEIGHT;
-    renderPins(ads);
+    updatePins();
     enableFilters();
   };
 
