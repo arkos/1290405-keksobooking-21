@@ -22,6 +22,9 @@
   const filtersContainer = document.querySelector(`.map__filters-container`);
   const filters = filtersContainer.querySelector(`.map__filters`);
   const filterByAccType = filters.querySelector(`#housing-type`);
+  const filterByPriceRange = filters.querySelector(`#housing-price`);
+  const filterByRoomCount = filters.querySelector(`#housing-rooms`);
+  const filterByGuestCount = filters.querySelector(`#housing-guests`);
 
   const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
   const mapPins = document.querySelector(`.map__pins`);
@@ -64,6 +67,9 @@
     }
 
     filterByAccType.addEventListener(`change`, onAccomodationTypeChange);
+    filterByPriceRange.addEventListener(`change`, onPriceRangeChange);
+    filterByRoomCount.addEventListener(`change`, onRoomCountChange);
+    filterByGuestCount.addEventListener(`change`, onGuestCountChange);
   };
 
   const disableFilters = () => {
@@ -72,6 +78,9 @@
     }
 
     filterByAccType.removeEventListener(`change`, onAccomodationTypeChange);
+    filterByPriceRange.removeEventListener(`change`, onPriceRangeChange);
+    filterByRoomCount.removeEventListener(`change`, onRoomCountChange);
+    filterByGuestCount.removeEventListener(`change`, onGuestCountChange);
   };
 
   const addOnMainPinMouseDown = (cb) => {
@@ -118,24 +127,49 @@
   };
 
   const updatePins = () => {
-    const filteredPins = applyFilterToPins();
+    const filteredPins = applyFiltersToPins();
     const filteredAds = Array.from(filteredPins).slice(0, MAX_PINS_COUNT);
     renderPins(new Map(filteredAds));
   };
 
-  const applyFilterToPins = () => {
+  const applyFiltersToPins = () => {
     const fromAds = Array.from(ads);
-    const filteredByAccTypeAds = fromAds.filter((fromAd) => {
+
+    const filteredAds = fromAds.filter((fromAd) => {
       const ad = fromAd[1];
-      return filterByAccType.value === `any` || filterByAccType.value === ad.offer.type;
+      return applyFilterByAccType(ad) && applyFilterByPriceRange(ad) && applyFilterByRoomCount(ad) && applyFilterByGuestCount(ad);
     });
-    return new Map(filteredByAccTypeAds);
+
+    return new Map(filteredAds);
   };
 
-  const onAccomodationTypeChange = () => {
-    updatePins();
-    closePopup();
+  const applyFilterByAccType = (ad) => filterByAccType.value === `any` || filterByAccType.value === ad.offer.type;
+
+  const applyFilterByPriceRange = (ad) => {
+    return filterByPriceRange.value === `any` ||
+      (filterByPriceRange.value === `low` && ad.offer.price < 10000) ||
+      (filterByPriceRange.value === `middle` && (ad.offer.price >= 10000 && ad.offer.price <= 50000)) ||
+      (filterByPriceRange.value === `high` && ad.offer.price > 50000);
   };
+
+  const applyFilterByRoomCount = (ad) => filterByRoomCount.value === `any` || +filterByRoomCount.value === ad.offer.rooms;
+
+  const applyFilterByGuestCount = (ad) => filterByGuestCount.value === `any` || +filterByGuestCount.value === ad.offer.guests;
+
+  const getFilterChangeHandler = () => {
+    return () => {
+      updatePins();
+      closePopup();
+    };
+  };
+
+  const onAccomodationTypeChange = getFilterChangeHandler();
+
+  const onPriceRangeChange = getFilterChangeHandler();
+
+  const onRoomCountChange = getFilterChangeHandler();
+
+  const onGuestCountChange = getFilterChangeHandler();
 
   const onMapMouseDown = (evt) => {
     util.isMainMouseButtonEvent(evt, () => openPopup(evt));
