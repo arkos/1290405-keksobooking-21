@@ -12,9 +12,12 @@
 
   const MAX_PINS_COUNT = 5;
 
+  const LOW_OFFER_PRICE = 10000;
+  const HIGH_OFFER_PRICE = 50000;
+
   const SOURCE_DATA_URL = `https://21.javascript.pages.academy/keksobooking/data`;
 
-  const {util, pin, card, http} = window;
+  const {util, pin, card, http, decorator} = window;
 
   const map = document.querySelector(`.map`);
   const mainPin = map.querySelector(`.map__pin--main`);
@@ -147,29 +150,34 @@
 
   const applyFilterByPriceRange = (ad) => {
     return filterByPriceRange.value === `any` ||
-      (filterByPriceRange.value === `low` && ad.offer.price < 10000) ||
-      (filterByPriceRange.value === `middle` && (ad.offer.price >= 10000 && ad.offer.price <= 50000)) ||
-      (filterByPriceRange.value === `high` && ad.offer.price > 50000);
+      (filterByPriceRange.value === `low` && ad.offer.price < LOW_OFFER_PRICE) ||
+      (filterByPriceRange.value === `middle` && (ad.offer.price >= LOW_OFFER_PRICE && ad.offer.price <= HIGH_OFFER_PRICE)) ||
+      (filterByPriceRange.value === `high` && ad.offer.price > HIGH_OFFER_PRICE);
   };
 
   const applyFilterByRoomCount = (ad) => filterByRoomCount.value === `any` || +filterByRoomCount.value === ad.offer.rooms;
 
   const applyFilterByGuestCount = (ad) => filterByGuestCount.value === `any` || +filterByGuestCount.value === ad.offer.guests;
 
-  const getFilterChangeHandler = () => {
-    return () => {
-      updatePins();
-      closePopup();
-    };
+  // const getFilterChangeHandler = () => {
+  //   return () => {
+  //     updatePins();
+  //     closePopup();
+  //   };
+  // };
+
+  const filterChangeHanlder = () => {
+    updatePins();
+    closePopup();
   };
 
-  const onAccomodationTypeChange = getFilterChangeHandler();
+  const onAccomodationTypeChange = decorator.debounce(filterChangeHanlder);
 
-  const onPriceRangeChange = getFilterChangeHandler();
+  const onPriceRangeChange = decorator.debounce(filterChangeHanlder);
 
-  const onRoomCountChange = getFilterChangeHandler();
+  const onRoomCountChange = decorator.debounce(filterChangeHanlder);
 
-  const onGuestCountChange = getFilterChangeHandler();
+  const onGuestCountChange = decorator.debounce(filterChangeHanlder);
 
   const onMapMouseDown = (evt) => {
     util.isMainMouseButtonEvent(evt, () => openPopup(evt));
