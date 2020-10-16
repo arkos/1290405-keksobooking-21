@@ -7,13 +7,13 @@
   const debounce = (cb) => {
     let lastTimeout = null;
 
-    return () => {
+    return (...parameters) => {
       if (lastTimeout) {
         clearTimeout(lastTimeout);
       }
 
       lastTimeout = setTimeout(() => {
-        cb();
+        cb.call(null, ...parameters);
       }, DEBOUNCE_INTERVAL);
     };
   };
