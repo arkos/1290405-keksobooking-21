@@ -30,7 +30,6 @@
   const filterByGuestCount = filters.querySelector(`#housing-guests`);
 
   const featuresContainer = filters.querySelector(`.map__features`);
-  const filterFeatures = featuresContainer.querySelectorAll(`.map__checkbox`);
 
   const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
   const mapPins = document.querySelector(`.map__pins`);
