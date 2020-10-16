@@ -29,6 +29,9 @@
   const filterByRoomCount = filters.querySelector(`#housing-rooms`);
   const filterByGuestCount = filters.querySelector(`#housing-guests`);
 
+  const featuresContainer = filters.querySelector(`.map__features`);
+  const filterFeatures = featuresContainer.querySelectorAll(`.map__checkbox`);
+
   const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
   const mapPins = document.querySelector(`.map__pins`);
 
@@ -73,6 +76,7 @@
     filterByPriceRange.addEventListener(`change`, onPriceRangeChange);
     filterByRoomCount.addEventListener(`change`, onRoomCountChange);
     filterByGuestCount.addEventListener(`change`, onGuestCountChange);
+    featuresContainer.addEventListener(`click`, onFeatureClick);
   };
 
   const disableFilters = () => {
@@ -84,6 +88,7 @@
     filterByPriceRange.removeEventListener(`change`, onPriceRangeChange);
     filterByRoomCount.removeEventListener(`change`, onRoomCountChange);
     filterByGuestCount.removeEventListener(`change`, onGuestCountChange);
+    featuresContainer.addEventListener(`click`, onFeatureClick);
   };
 
   const addOnMainPinMouseDown = (cb) => {
@@ -140,7 +145,11 @@
 
     const filteredAds = fromAds.filter((fromAd) => {
       const ad = fromAd[1];
-      return applyFilterByAccType(ad) && applyFilterByPriceRange(ad) && applyFilterByRoomCount(ad) && applyFilterByGuestCount(ad);
+      return applyFilterByAccType(ad) &&
+        applyFilterByPriceRange(ad) &&
+        applyFilterByRoomCount(ad) &&
+        applyFilterByGuestCount(ad) &&
+        applyFilterByFeature(ad);
     });
 
     return new Map(filteredAds);
@@ -159,25 +168,37 @@
 
   const applyFilterByGuestCount = (ad) => filterByGuestCount.value === `any` || +filterByGuestCount.value === ad.offer.guests;
 
-  // const getFilterChangeHandler = () => {
-  //   return () => {
-  //     updatePins();
-  //     closePopup();
-  //   };
-  // };
+  const applyFilterByFeature = (ad) => {
+    const checkedFeatures = featuresContainer.querySelectorAll(`.map__checkbox:checked`);
 
-  const filterChangeHanlder = () => {
+    if (checkedFeatures.length === 0) {
+      return true;
+    }
+
+    let hasFeature = true;
+
+    checkedFeatures.forEach((checkedFeature) => {
+      if (!ad.offer.features.includes(checkedFeature.value)) {
+        hasFeature = false;
+      }
+    });
+    return hasFeature;
+  };
+
+  const filterEventHandler = () => {
     updatePins();
     closePopup();
   };
 
-  const onAccomodationTypeChange = decorator.debounce(filterChangeHanlder);
+  const onAccomodationTypeChange = decorator.debounce(filterEventHandler);
 
-  const onPriceRangeChange = decorator.debounce(filterChangeHanlder);
+  const onPriceRangeChange = decorator.debounce(filterEventHandler);
 
-  const onRoomCountChange = decorator.debounce(filterChangeHanlder);
+  const onRoomCountChange = decorator.debounce(filterEventHandler);
 
-  const onGuestCountChange = decorator.debounce(filterChangeHanlder);
+  const onGuestCountChange = decorator.debounce(filterEventHandler);
+
+  const onFeatureClick = decorator.debounce(filterEventHandler);
 
   const onMapMouseDown = (evt) => {
     util.isMainMouseButtonEvent(evt, () => openPopup(evt));
