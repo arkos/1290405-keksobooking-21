@@ -52,7 +52,23 @@
     xhr.send();
   };
 
+  const upload = (url, data, onSuccess, onFailure) => {
+    const xhr = new XMLHttpRequest();
+    xhr.responseType = `json`;
+    xhr.addEventListener(`load`, () => {
+      onSuccess(xhr.response);
+    });
+
+    xhr.addEventListener(`error`, () => {
+      onFailure();
+    });
+
+    xhr.open(`POST`, url);
+    xhr.send(data);
+  };
+
   window.http = {
-    load
+    load,
+    upload
   };
 })();
