@@ -174,14 +174,8 @@
       return true;
     }
 
-    let hasFeature = true;
-
-    checkedFeatures.forEach((checkedFeature) => {
-      if (!ad.offer.features.includes(checkedFeature.value)) {
-        hasFeature = false;
-      }
-    });
-    return hasFeature;
+    return Array.from(checkedFeatures)
+      .every((checkedFeature) => ad.offer.features.includes(checkedFeature.value));
   };
 
   const filterEventHandler = () => {
