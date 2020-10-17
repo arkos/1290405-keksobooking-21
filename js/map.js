@@ -12,9 +12,12 @@
 
   const MAX_PINS_COUNT = 5;
 
+  const LOW_OFFER_PRICE = 10000;
+  const HIGH_OFFER_PRICE = 50000;
+
   const SOURCE_DATA_URL = `https://21.javascript.pages.academy/keksobooking/data`;
 
-  const {util, pin, card, http} = window;
+  const {util, pin, card, http, decorator} = window;
 
   const map = document.querySelector(`.map`);
   const mainPin = map.querySelector(`.map__pin--main`);
@@ -22,6 +25,11 @@
   const filtersContainer = document.querySelector(`.map__filters-container`);
   const filters = filtersContainer.querySelector(`.map__filters`);
   const filterByAccType = filters.querySelector(`#housing-type`);
+  const filterByPriceRange = filters.querySelector(`#housing-price`);
+  const filterByRoomCount = filters.querySelector(`#housing-rooms`);
+  const filterByGuestCount = filters.querySelector(`#housing-guests`);
+
+  const featuresContainer = filters.querySelector(`.map__features`);
 
   const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
   const mapPins = document.querySelector(`.map__pins`);
@@ -64,6 +72,10 @@
     }
 
     filterByAccType.addEventListener(`change`, onAccomodationTypeChange);
+    filterByPriceRange.addEventListener(`change`, onPriceRangeChange);
+    filterByRoomCount.addEventListener(`change`, onRoomCountChange);
+    filterByGuestCount.addEventListener(`change`, onGuestCountChange);
+    featuresContainer.addEventListener(`click`, onFeatureClick);
   };
 
   const disableFilters = () => {
@@ -72,6 +84,10 @@
     }
 
     filterByAccType.removeEventListener(`change`, onAccomodationTypeChange);
+    filterByPriceRange.removeEventListener(`change`, onPriceRangeChange);
+    filterByRoomCount.removeEventListener(`change`, onRoomCountChange);
+    filterByGuestCount.removeEventListener(`change`, onGuestCountChange);
+    featuresContainer.addEventListener(`click`, onFeatureClick);
   };
 
   const addOnMainPinMouseDown = (cb) => {
@@ -118,24 +134,70 @@
   };
 
   const updatePins = () => {
-    const filteredPins = applyFilterToPins();
+    const filteredPins = applyFiltersToPins();
     const filteredAds = Array.from(filteredPins).slice(0, MAX_PINS_COUNT);
     renderPins(new Map(filteredAds));
   };
 
-  const applyFilterToPins = () => {
+  const applyFiltersToPins = () => {
     const fromAds = Array.from(ads);
-    const filteredByAccTypeAds = fromAds.filter((fromAd) => {
+
+    const filteredAds = fromAds.filter((fromAd) => {
       const ad = fromAd[1];
-      return filterByAccType.value === `any` || filterByAccType.value === ad.offer.type;
+      return applyFilterByAccType(ad) &&
+        applyFilterByPriceRange(ad) &&
+        applyFilterByRoomCount(ad) &&
+        applyFilterByGuestCount(ad) &&
+        applyFilterByFeature(ad);
     });
-    return new Map(filteredByAccTypeAds);
+
+    return new Map(filteredAds);
   };
 
-  const onAccomodationTypeChange = () => {
+  const applyFilterByAccType = (ad) => filterByAccType.value === `any` || filterByAccType.value === ad.offer.type;
+
+  const applyFilterByPriceRange = (ad) => {
+    return filterByPriceRange.value === `any` ||
+      (filterByPriceRange.value === `low` && ad.offer.price < LOW_OFFER_PRICE) ||
+      (filterByPriceRange.value === `middle` && (ad.offer.price >= LOW_OFFER_PRICE && ad.offer.price <= HIGH_OFFER_PRICE)) ||
+      (filterByPriceRange.value === `high` && ad.offer.price > HIGH_OFFER_PRICE);
+  };
+
+  const applyFilterByRoomCount = (ad) => filterByRoomCount.value === `any` || +filterByRoomCount.value === ad.offer.rooms;
+
+  const applyFilterByGuestCount = (ad) => filterByGuestCount.value === `any` || +filterByGuestCount.value === ad.offer.guests;
+
+  const applyFilterByFeature = (ad) => {
+    const checkedFeatures = featuresContainer.querySelectorAll(`.map__checkbox:checked`);
+
+    if (checkedFeatures.length === 0) {
+      return true;
+    }
+
+    let hasFeature = true;
+
+    checkedFeatures.forEach((checkedFeature) => {
+      if (!ad.offer.features.includes(checkedFeature.value)) {
+        hasFeature = false;
+      }
+    });
+    return hasFeature;
+  };
+
+  const filterEventHandler = () => {
     updatePins();
     closePopup();
   };
+
+  const onAccomodationTypeChange = decorator.debounce(filterEventHandler);
+
+  const onPriceRangeChange = decorator.debounce(filterEventHandler);
+
+  const onRoomCountChange = decorator.debounce(filterEventHandler);
+
+  const onGuestCountChange = decorator.debounce(filterEventHandler);
+
+  const onFeatureClick = decorator.debounce(filterEventHandler);
 
   const onMapMouseDown = (evt) => {
     util.isMainMouseButtonEvent(evt, () => openPopup(evt));
