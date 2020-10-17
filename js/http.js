@@ -7,22 +7,29 @@
   const XHR_ERROR_CODE_404 = `Ничего не найдено`;
   const XHR_ERROR_GENERIC = `Произошла ошибка соединения`;
 
+  const StatusCode = {
+    OK: 200,
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    NOT_FOUND: 404
+  };
+
   const load = (url, onSuccess, onFailure) => {
 
     const onLoad = () => {
       let error;
 
       switch (xhr.status) {
-        case 200:
+        case StatusCode.OK:
           onSuccess(xhr.response);
           break;
-        case 400:
+        case StatusCode.BAD_REQUEST:
           error = XHR_ERROR_CODE_400;
           break;
-        case 401:
+        case StatusCode.UNAUTHORIZED:
           error = XHR_ERROR_CODE_401;
           break;
-        case 404:
+        case StatusCode.NOT_FOUND:
           error = XHR_ERROR_CODE_404;
           break;
         default:
