@@ -16,7 +16,12 @@
     [`palace`]: 10000
   };
 
-  const {map} = window;
+  const UPLOAD_FORM_DATA_URL = `https://21.javascript.pages.academy/keksobooking`;
+
+  const {map, http} = window;
+
+  let sendUploadSuccess;
+  let sendUploadFailure;
 
   const adForm = document.querySelector(`.ad-form`);
   const title = adForm.querySelector(`#title`);
@@ -26,10 +31,12 @@
   const guestsNumber = adForm.querySelector(`#capacity`);
   const checkIn = adForm.querySelector(`#timein`);
   const checkOut = adForm.querySelector(`#timeout`);
-  const address = document.querySelector(`#address`);
+  const address = adForm.querySelector(`#address`);
+  const reset = adForm.querySelector(`.ad-form__reset`);
 
   const enable = () => {
     adForm.classList.remove(`ad-form--disabled`);
+    adForm.addEventListener(`submit`, onFormSubmit);
 
     title.addEventListener(`invalid`, onTitleInvalid);
     title.addEventListener(`input`, onTitleInput);
@@ -44,6 +51,8 @@
     roomsNumber.addEventListener(`change`, onRoomsNumberChange);
     guestsNumber.addEventListener(`change`, onGuestNumberChange);
 
+    reset.addEventListener(`click`, onResetClick);
+
     enableFilters();
     map.subscribeToMainPinUpdates(setMainPinCoordinates);
 
@@ -54,6 +63,7 @@
 
   const disable = () => {
     adForm.classList.add(`ad-form--disabled`);
+    adForm.removeEventListener(`submit`, onFormSubmit);
 
     title.removeEventListener(`invalid`, onTitleInvalid);
     title.removeEventListener(`input`, onTitleInput);
@@ -68,6 +78,13 @@
 
     roomsNumber.removeEventListener(`change`, onRoomsNumberChange);
     guestsNumber.removeEventListener(`change`, onGuestNumberChange);
+
+    reset.addEventListener(`click`, onResetClick);
+
+    adForm.reset();
+
+    sendUploadSuccess = null;
+    sendUploadFailure = null;
 
     disableFilters();
     map.subscribeToMainPinUpdates(setMainPinCoordinates);
@@ -189,14 +206,45 @@
     syncCheckIn();
   };
 
+  const onFormSubmit = (evt) => {
+    http.upload(UPLOAD_FORM_DATA_URL, new FormData(adForm), onUploadSuccess, onUploadFailure);
+    evt.preventDefault();
+  };
+
+  const onUploadSuccess = (response) => {
+    if (sendUploadSuccess) {
+      sendUploadSuccess(response);
+    }
+  };
+
+  const onUploadFailure = () => {
+    if (sendUploadFailure) {
+      sendUploadFailure();
+    }
+  };
+
+  const onResetClick = () => {
+    adForm.reset();
+  };
+
   const setMainPinCoordinates = (coords) => {
     const {x, y} = coords;
     address.value = `${x}, ${y}`;
   };
 
+  const subscribeToUploadSuccess = (cb) => {
+    sendUploadSuccess = cb;
+  };
+
+  const subscribeToUploadFailure = (cb) => {
+    sendUploadFailure = cb;
+  };
+
   window.form = {
     enable,
     disable,
+    subscribeToUploadSuccess,
+    subscribeToUploadFailure
   };
 
 })();

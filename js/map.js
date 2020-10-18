@@ -4,6 +4,8 @@
   const MAIN_PIN_WIDTH = 65;
   const MAIN_PIN_ACTIVE_HEIGHT = 84;
   const MAIN_PIN_INACTIVE_HEIGHT = 65;
+  const MAIN_PIN_INITIAL_X = 570;
+  const MAIN_PIN_INITIAL_Y = 375;
 
   const MAP_COORD_MIN_X = 0;
   const MAP_COORD_MAX_X = 1200;
@@ -43,10 +45,15 @@
 
   let ads;
 
-  const show = () => {
+  const activateMainPin = (status) => {
+    mainPinSpikeOffset.y = status ? Math.floor(MAIN_PIN_ACTIVE_HEIGHT)
+      : Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
+  };
+
+  const activate = () => {
     map.classList.remove(`map--faded`);
 
-    mainPinSpikeOffset.y = Math.floor(MAIN_PIN_ACTIVE_HEIGHT);
+    activateMainPin(true);
 
     sendMainPinUpdated(getMainPinSpikeCoords());
 
@@ -57,13 +64,19 @@
     mainPin.addEventListener(`mousedown`, onMainPinMouseDown);
   };
 
-  const hide = () => {
+  const deactivate = () => {
     map.classList.add(`map--faded`);
+    removeCurrentPins();
+    closePopup();
 
-    mainPinSpikeOffset.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
+    activateMainPin(false);
+
+    moveMainPinTo(MAIN_PIN_INITIAL_X, MAIN_PIN_INITIAL_Y);
 
     sendMainPinUpdated(getMainPinSpikeCoords());
     disableFilters();
+
+    sendMainPinUpdated = null;
   };
 
   const enableFilters = () => {
@@ -127,10 +140,14 @@
     const pinElements = [];
     pinsToRender.forEach((pinToRender, key) => pinElements.push(pin.create(pinTemplate, pinToRender, key)));
 
-    const currentPinElements = mapPins.querySelectorAll(`.map__pin:not([class*="map__pin--main"])`);
-    currentPinElements.forEach((element) => element.remove());
+    removeCurrentPins();
 
     mapPins.append(...pinElements);
+  };
+
+  const removeCurrentPins = () => {
+    const currentPinElements = mapPins.querySelectorAll(`.map__pin:not([class*="map__pin--main"])`);
+    currentPinElements.forEach((element) => element.remove());
   };
 
   const updatePins = () => {
@@ -174,14 +191,8 @@
       return true;
     }
 
-    let hasFeature = true;
-
-    checkedFeatures.forEach((checkedFeature) => {
-      if (!ad.offer.features.includes(checkedFeature.value)) {
-        hasFeature = false;
-      }
-    });
-    return hasFeature;
+    return Array.from(checkedFeatures)
+      .every((checkedFeature) => ad.offer.features.includes(checkedFeature.value));
   };
 
   const filterEventHandler = () => {
@@ -243,7 +254,9 @@
 
       if ((currentPointerLeft !== movePointerLeftTo) || (currentPointerTop !== movePointerTopTo)) {
         moveMainPinSpikeTo(movePointerLeftTo, movePointerTopTo);
-        sendMainPinUpdated(getMainPinSpikeCoords());
+        if (sendMainPinUpdated) {
+          sendMainPinUpdated(getMainPinSpikeCoords());
+        }
       }
 
     };
@@ -323,13 +336,20 @@
     const shiftLeft = currentLeft - moveLeftTo;
     const shiftTop = currentTop - moveTopTo;
 
-    mainPin.style.left = `${mainPin.offsetLeft - shiftLeft}px`;
-    mainPin.style.top = `${mainPin.offsetTop - shiftTop}px`;
+    const destLeft = mainPin.offsetLeft - shiftLeft;
+    const destTop = mainPin.offsetTop - shiftTop;
+
+    moveMainPinTo(destLeft, destTop);
+  };
+
+  const moveMainPinTo = (moveLeftTo, moveTopTo) => {
+    mainPin.style.left = `${moveLeftTo}px`;
+    mainPin.style.top = `${moveTopTo}px`;
   };
 
   window.map = {
-    show,
-    hide,
+    activate,
+    deactivate,
     addOnMainPinMouseDown,
     addOnMainPinKeyDown,
     removeOnMainPinMouseDown,
