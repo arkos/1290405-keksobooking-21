@@ -4,6 +4,8 @@
   const MAIN_PIN_WIDTH = 65;
   const MAIN_PIN_ACTIVE_HEIGHT = 84;
   const MAIN_PIN_INACTIVE_HEIGHT = 65;
+  const MAIN_PIN_INITIAL_X = 570;
+  const MAIN_PIN_INITIAL_Y = 375;
 
   const MAP_COORD_MIN_X = 0;
   const MAP_COORD_MAX_X = 1200;
@@ -62,6 +64,9 @@
     removeCurrentPins();
 
     mainPinSpikeOffset.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
+
+    mainPin.style.left = `${MAIN_PIN_INITIAL_X}px`;
+    mainPin.style.top = `${MAIN_PIN_INITIAL_Y}px`;
 
     sendMainPinUpdated(getMainPinSpikeCoords());
     disableFilters();
