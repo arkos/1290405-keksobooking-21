@@ -31,7 +31,8 @@
   const guestsNumber = adForm.querySelector(`#capacity`);
   const checkIn = adForm.querySelector(`#timein`);
   const checkOut = adForm.querySelector(`#timeout`);
-  const address = document.querySelector(`#address`);
+  const address = adForm.querySelector(`#address`);
+  const reset = adForm.querySelector(`.ad-form__reset`);
 
   const enable = () => {
     adForm.classList.remove(`ad-form--disabled`);
@@ -49,6 +50,8 @@
 
     roomsNumber.addEventListener(`change`, onRoomsNumberChange);
     guestsNumber.addEventListener(`change`, onGuestNumberChange);
+
+    reset.addEventListener(`click`, onResetClick);
 
     enableFilters();
     map.subscribeToMainPinUpdates(setMainPinCoordinates);
@@ -75,6 +78,8 @@
 
     roomsNumber.removeEventListener(`change`, onRoomsNumberChange);
     guestsNumber.removeEventListener(`change`, onGuestNumberChange);
+
+    reset.addEventListener(`click`, onResetClick);
 
     adForm.reset();
 
@@ -216,6 +221,10 @@
     if (sendUploadFailure) {
       sendUploadFailure();
     }
+  };
+
+  const onResetClick = () => {
+    adForm.reset();
   };
 
   const setMainPinCoordinates = (coords) => {
