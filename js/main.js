@@ -21,14 +21,14 @@
     form.subscribeToUploadFailure(onUploadFailure);
 
     form.enable();
-    map.show();
+    map.activate();
 
     document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   const deactivatePage = () => {
     form.disable();
-    map.hide();
+    map.deactivate();
 
     map.addOnMainPinMouseDown(onMainPinInactiveMouseDown);
     map.addOnMainPinKeyDown(onMainPinInactiveKeyDown);

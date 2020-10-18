@@ -45,10 +45,15 @@
 
   let ads;
 
-  const show = () => {
+  const activateMainPin = (status) => {
+    mainPinSpikeOffset.y = status ? Math.floor(MAIN_PIN_ACTIVE_HEIGHT)
+      : Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
+  };
+
+  const activate = () => {
     map.classList.remove(`map--faded`);
 
-    mainPinSpikeOffset.y = Math.floor(MAIN_PIN_ACTIVE_HEIGHT);
+    activateMainPin(true);
 
     sendMainPinUpdated(getMainPinSpikeCoords());
 
@@ -59,14 +64,14 @@
     mainPin.addEventListener(`mousedown`, onMainPinMouseDown);
   };
 
-  const hide = () => {
+  const deactivate = () => {
     map.classList.add(`map--faded`);
     removeCurrentPins();
+    closePopup();
 
-    mainPinSpikeOffset.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
+    activateMainPin(false);
 
-    mainPin.style.left = `${MAIN_PIN_INITIAL_X}px`;
-    mainPin.style.top = `${MAIN_PIN_INITIAL_Y}px`;
+    moveMainPinTo(MAIN_PIN_INITIAL_X, MAIN_PIN_INITIAL_Y);
 
     sendMainPinUpdated(getMainPinSpikeCoords());
     disableFilters();
@@ -331,13 +336,20 @@
     const shiftLeft = currentLeft - moveLeftTo;
     const shiftTop = currentTop - moveTopTo;
 
-    mainPin.style.left = `${mainPin.offsetLeft - shiftLeft}px`;
-    mainPin.style.top = `${mainPin.offsetTop - shiftTop}px`;
+    const destLeft = mainPin.offsetLeft - shiftLeft;
+    const destTop = mainPin.offsetTop - shiftTop;
+
+    moveMainPinTo(destLeft, destTop);
+  };
+
+  const moveMainPinTo = (moveLeftTo, moveTopTo) => {
+    mainPin.style.left = `${moveLeftTo}px`;
+    mainPin.style.top = `${moveTopTo}px`;
   };
 
   window.map = {
-    show,
-    hide,
+    activate,
+    deactivate,
     addOnMainPinMouseDown,
     addOnMainPinKeyDown,
     removeOnMainPinMouseDown,
