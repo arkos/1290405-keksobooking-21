@@ -70,6 +70,10 @@
       onFailure();
     });
 
+    xhr.addEventListener(`timeout`, () => {
+      onFailure();
+    });
+
     xhr.open(`POST`, url);
     xhr.send(data);
   };

@@ -65,6 +65,8 @@
 
     sendMainPinUpdated(getMainPinSpikeCoords());
     disableFilters();
+
+    sendMainPinUpdated = null;
   };
 
   const enableFilters = () => {
@@ -242,7 +244,9 @@
 
       if ((currentPointerLeft !== movePointerLeftTo) || (currentPointerTop !== movePointerTopTo)) {
         moveMainPinSpikeTo(movePointerLeftTo, movePointerTopTo);
-        sendMainPinUpdated(getMainPinSpikeCoords());
+        if (sendMainPinUpdated) {
+          sendMainPinUpdated(getMainPinSpikeCoords());
+        }
       }
 
     };

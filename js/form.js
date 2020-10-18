@@ -78,6 +78,9 @@
 
     adForm.reset();
 
+    sendUploadSuccess = null;
+    sendUploadFailure = null;
+
     disableFilters();
     map.subscribeToMainPinUpdates(setMainPinCoordinates);
   };
@@ -204,11 +207,15 @@
   };
 
   const onUploadSuccess = (response) => {
-    sendUploadSuccess(response);
+    if (sendUploadSuccess) {
+      sendUploadSuccess(response);
+    }
   };
 
   const onUploadFailure = () => {
-    sendUploadFailure();
+    if (sendUploadFailure) {
+      sendUploadFailure();
+    }
   };
 
   const setMainPinCoordinates = (coords) => {

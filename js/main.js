@@ -8,10 +8,17 @@
     .content
     .querySelector(`.success`);
 
+  const errorMessageTemplate = document.querySelector(`#error`)
+    .content
+    .querySelector(`.error`);
+
+  const errorTryAgain = errorMessageTemplate.querySelector(`.error__button`);
+
   const activatePage = () => {
     map.removeOnMainPinMouseDown(onMainPinInactiveMouseDown);
     map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
     form.subscribeToUploadSuccess(onUploadSuccess);
+    form.subscribeToUploadFailure(onUploadFailure);
 
     form.enable();
     map.show();
@@ -43,6 +50,23 @@
     document.removeEventListener(`keydown`, onSuccessMessageEscKeyDown);
   };
 
+  const showErrorMessage = () => {
+    const errorMessage = errorMessageTemplate.cloneNode(true);
+    main.append(errorMessage);
+    document.addEventListener(`click`, onErrorMessageClick);
+    document.addEventListener(`keydown`, onErrorMessageEscKeyDown);
+    errorTryAgain.addEventListener(`click`, onErrorMessageTryAgainClick);
+  };
+
+  const removeErrorMessage = () => {
+    const errorMessage = main.querySelector(`.error`);
+    errorMessage.remove();
+    document.removeEventListener(`click`, onErrorMessageClick);
+    document.removeEventListener(`keydown`, onErrorMessageEscKeyDown);
+    errorTryAgain.removeEventListener(`click`, onErrorMessageTryAgainClick);
+  };
+
+
   // Event handlers
 
   const onSuccessMessageEscKeyDown = (evt) => {
@@ -53,9 +77,25 @@
     removeSuccessMessage();
   };
 
+  const onErrorMessageEscKeyDown = (evt) => {
+    util.isEscEvent(evt, removeErrorMessage);
+  };
+
+  const onErrorMessageClick = () => {
+    removeErrorMessage();
+  };
+
+  const onErrorMessageTryAgainClick = () => {
+    removeErrorMessage();
+  };
+
   const onUploadSuccess = () => {
     showSuccessMessage();
     deactivatePage();
+  };
+
+  const onUploadFailure = () => {
+    showErrorMessage();
   };
 
   const onEscKeyDown = (evt) => {
