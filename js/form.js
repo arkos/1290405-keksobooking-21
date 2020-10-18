@@ -76,6 +76,8 @@
     roomsNumber.removeEventListener(`change`, onRoomsNumberChange);
     guestsNumber.removeEventListener(`change`, onGuestNumberChange);
 
+    adForm.reset();
+
     disableFilters();
     map.subscribeToMainPinUpdates(setMainPinCoordinates);
   };

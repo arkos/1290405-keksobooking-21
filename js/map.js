@@ -59,6 +59,7 @@
 
   const hide = () => {
     map.classList.add(`map--faded`);
+    removeCurrentPins();
 
     mainPinSpikeOffset.y = Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2);
 
@@ -127,10 +128,14 @@
     const pinElements = [];
     pinsToRender.forEach((pinToRender, key) => pinElements.push(pin.create(pinTemplate, pinToRender, key)));
 
-    const currentPinElements = mapPins.querySelectorAll(`.map__pin:not([class*="map__pin--main"])`);
-    currentPinElements.forEach((element) => element.remove());
+    removeCurrentPins();
 
     mapPins.append(...pinElements);
+  };
+
+  const removeCurrentPins = () => {
+    const currentPinElements = mapPins.querySelectorAll(`.map__pin:not([class*="map__pin--main"])`);
+    currentPinElements.forEach((element) => element.remove());
   };
 
   const updatePins = () => {
