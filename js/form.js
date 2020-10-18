@@ -16,7 +16,12 @@
     [`palace`]: 10000
   };
 
-  const {map} = window;
+  const UPLOAD_FORM_DATA_URL = `https://21.javascript.pages.academy/keksobooking`;
+
+  const {map, http} = window;
+
+  let sendUploadSuccess;
+  let sendUploadFailure;
 
   const adForm = document.querySelector(`.ad-form`);
   const title = adForm.querySelector(`#title`);
@@ -30,6 +35,7 @@
 
   const enable = () => {
     adForm.classList.remove(`ad-form--disabled`);
+    adForm.addEventListener(`submit`, onFormSubmit);
 
     title.addEventListener(`invalid`, onTitleInvalid);
     title.addEventListener(`input`, onTitleInput);
@@ -54,6 +60,7 @@
 
   const disable = () => {
     adForm.classList.add(`ad-form--disabled`);
+    adForm.removeEventListener(`submit`, onFormSubmit);
 
     title.removeEventListener(`invalid`, onTitleInvalid);
     title.removeEventListener(`input`, onTitleInput);
@@ -189,14 +196,37 @@
     syncCheckIn();
   };
 
+  const onFormSubmit = (evt) => {
+    http.upload(UPLOAD_FORM_DATA_URL, new FormData(adForm), onUploadSuccess, onUploadFailure);
+    evt.preventDefault();
+  };
+
+  const onUploadSuccess = (response) => {
+    sendUploadSuccess(response);
+  };
+
+  const onUploadFailure = () => {
+    sendUploadFailure();
+  };
+
   const setMainPinCoordinates = (coords) => {
     const {x, y} = coords;
     address.value = `${x}, ${y}`;
   };
 
+  const subscribeToUploadSuccess = (cb) => {
+    sendUploadSuccess = cb;
+  };
+
+  const subscribeToUploadFailure = (cb) => {
+    sendUploadFailure = cb;
+  };
+
   window.form = {
     enable,
     disable,
+    subscribeToUploadSuccess,
+    subscribeToUploadFailure
   };
 
 })();
