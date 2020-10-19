@@ -96,6 +96,7 @@
       filter.disabled = true;
     }
 
+    filters.reset();
     filterByAccType.removeEventListener(`change`, onAccomodationTypeChange);
     filterByPriceRange.removeEventListener(`change`, onPriceRangeChange);
     filterByRoomCount.removeEventListener(`change`, onRoomCountChange);

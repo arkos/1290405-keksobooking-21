@@ -90,8 +90,8 @@
   };
 
   const onUploadSuccess = () => {
-    showSuccessMessage();
     deactivatePage();
+    showSuccessMessage();
   };
 
   const onUploadFailure = () => {
