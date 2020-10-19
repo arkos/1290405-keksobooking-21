@@ -106,30 +106,27 @@
     popupFeatures.append(fragment);
   };
 
-  const open = (popup, elementBefore) => {
-    elementBefore.before(popup);
-    const popupClose = popup.querySelector(`.popup__close`);
-    popupClose.addEventListener(`click`, onPopupCloseClick);
-  };
-
-  const close = (popup) => {
-    if (popup) {
-      const popupClose = popup.querySelector(`.popup__close`);
-      popupClose.removeEventListener(`click`, onPopupCloseClick);
-      popup.remove();
-    }
-  };
-
   const onPopupCloseClick = (evt) => {
-    close(evt.target.parentElement);
+    window.card.close(evt.target.parentElement);
   };
 
   const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
 
   window.card = {
     create,
-    close,
-    open
+    close: (popup) => {
+      if (popup) {
+        const popupClose = popup.querySelector(`.popup__close`);
+        popupClose.removeEventListener(`click`, onPopupCloseClick);
+        popup.remove();
+      }
+    },
+
+    open: (popup, elementBefore) => {
+      elementBefore.before(popup);
+      const popupClose = popup.querySelector(`.popup__close`);
+      popupClose.addEventListener(`click`, onPopupCloseClick);
+    }
   };
 
 })();
