@@ -16,7 +16,7 @@ const PRICE_RULES_MAP = {
 
 const UPLOAD_FORM_DATA_URL = `https://21.javascript.pages.academy/keksobooking`;
 
-const {map, http} = window;
+const {map, http, preview} = window;
 
 let sendUploadSuccess;
 let sendUploadFailure;
@@ -31,6 +31,9 @@ const checkIn = adForm.querySelector(`#timein`);
 const checkOut = adForm.querySelector(`#timeout`);
 const address = adForm.querySelector(`#address`);
 const reset = adForm.querySelector(`.ad-form__reset`);
+const avatar = adForm.querySelector(`#avatar`);
+const avatarPreview = adForm.querySelector(`.ad-form-header__preview img`);
+
 
 const enable = () => {
   adForm.classList.remove(`ad-form--disabled`);
@@ -53,6 +56,9 @@ const enable = () => {
 
   enableFilters();
   map.subscribeToMainPinUpdates(setMainPinCoordinates);
+  preview.subscribeToReaderLoad(avatar, (result) => {
+    avatarPreview.src = result;
+  });
 
   setCapacityValidity(roomsNumber);
   setPriceAttributes();
