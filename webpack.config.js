@@ -5,6 +5,7 @@ module.exports = {
     "./js/util.js",
     "./js/decorator.js",
     "./js/http.js",
+    "./js/preview.js",
     "./js/pin.js",
     "./js/card.js",
     "./js/map.js",
