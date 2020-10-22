@@ -5,33 +5,33 @@
     `gif`, `jpg`, `jpeg`, `png`
   ];
 
-  const subscribeToReaderLoad = (fileChooser, cb) => {
-    fileChooser.addEventListener(`change`, onFileChooserChange);
-
-
+  const subscribe = (fileChooser, cb) => {
     const onFileChooserChange = () => {
-      const file = fileChooser.files[0];
-      const fileName = file.name.toLowerCase();
+      Array.from(fileChooser.files).forEach((file) => {
+        const fileName = file.name.toLowerCase();
 
-      const matches = ALLOWED_FILE_TYPES.some((extension) => fileName.endsWith(extension));
+        const matches = ALLOWED_FILE_TYPES.some((extension) => fileName.endsWith(extension));
 
-      if (matches) {
-        const reader = new FileReader();
-        reader.addEventListener(`load`, onReaderLoad);
+        if (matches) {
+          const reader = new FileReader();
 
-        const onReaderLoad = () => {
-          cb(reader.result);
-          reader.removeEventListener(`load`, onReaderLoad);
-        };
+          const onReaderLoad = () => {
+            cb(reader.result);
+            reader.removeEventListener(`load`, onReaderLoad);
+          };
 
-        reader.readAsDataURL(file);
-      }
-      fileChooser.removeEventListener(`change`, onFileChooserChange);
+          reader.addEventListener(`load`, onReaderLoad);
+          reader.readAsDataURL(file);
+        }
+      });
     };
+
+    fileChooser.addEventListener(`change`, onFileChooserChange);
   };
 
 
   window.preview = {
-    subscribeToReaderLoad
+    subscribe
   };
+
 })();

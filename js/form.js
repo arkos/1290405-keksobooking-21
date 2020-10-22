@@ -16,6 +16,9 @@ const PRICE_RULES_MAP = {
 
 const UPLOAD_FORM_DATA_URL = `https://21.javascript.pages.academy/keksobooking`;
 
+const PREVIEW_IMAGE_WIDTH = 70;
+const PREVIEW_IMAGE_HEIGHT = 70;
+
 const {map, http, preview} = window;
 
 let sendUploadSuccess;
@@ -31,13 +34,18 @@ const checkIn = adForm.querySelector(`#timein`);
 const checkOut = adForm.querySelector(`#timeout`);
 const address = adForm.querySelector(`#address`);
 const reset = adForm.querySelector(`.ad-form__reset`);
-const avatar = adForm.querySelector(`#avatar`);
-const avatarPreview = adForm.querySelector(`.ad-form-header__preview img`);
 
+const avatarFileChooser = adForm.querySelector(`#avatar`);
+const avatarPreview = adForm.querySelector(`.ad-form-header__preview img`);
+const defaultAvatarSrc = avatarPreview.src;
+
+const accPhotoFileChooser = adForm.querySelector(`#images`);
+const accPhotoPreview = adForm.querySelector(`.ad-form__photo`);
 
 const enable = () => {
   adForm.classList.remove(`ad-form--disabled`);
   adForm.addEventListener(`submit`, onFormSubmit);
+  adForm.addEventListener(`reset`, onFormReset);
 
   title.addEventListener(`invalid`, onTitleInvalid);
   title.addEventListener(`input`, onTitleInput);
@@ -56,8 +64,22 @@ const enable = () => {
 
   enableFilters();
   map.subscribeToMainPinUpdates(setMainPinCoordinates);
-  preview.subscribeToReaderLoad(avatar, (result) => {
+
+  preview.subscribe(avatarFileChooser, (result) => {
     avatarPreview.src = result;
+  });
+
+  preview.subscribe(accPhotoFileChooser, (result) => {
+
+    for (const currentPhotoPreview of accPhotoPreview.children) {
+      currentPhotoPreview.remove();
+    }
+
+    const img = document.createElement(`img`);
+    img.src = result;
+    img.width = PREVIEW_IMAGE_WIDTH;
+    img.height = PREVIEW_IMAGE_HEIGHT;
+    accPhotoPreview.append(img);
   });
 
   setCapacityValidity(roomsNumber);
@@ -68,6 +90,8 @@ const enable = () => {
 const disable = () => {
   adForm.classList.add(`ad-form--disabled`);
   adForm.removeEventListener(`submit`, onFormSubmit);
+  adForm.removeEventListener(`reset`, onFormReset);
+
 
   title.removeEventListener(`invalid`, onTitleInvalid);
   title.removeEventListener(`input`, onTitleInput);
@@ -229,6 +253,16 @@ const onUploadFailure = () => {
 
 const onResetClick = () => {
   adForm.reset();
+};
+
+const onFormReset = () => {
+  if (defaultAvatarSrc) {
+    avatarPreview.src = defaultAvatarSrc;
+  }
+
+  for (const currentPhotoPreview of accPhotoPreview.children) {
+    currentPhotoPreview.remove();
+  }
 };
 
 const setMainPinCoordinates = (coords) => {
