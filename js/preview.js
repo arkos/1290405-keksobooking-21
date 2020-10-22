@@ -5,7 +5,7 @@
     `gif`, `jpg`, `jpeg`, `png`
   ];
 
-  const subscribeToReaderLoad = (fileChooser, onReaderLoad) => {
+  const subscribeToReaderLoad = (fileChooser, cb) => {
     fileChooser.addEventListener(`change`, onFileChooserChange);
 
 
@@ -17,12 +17,16 @@
 
       if (matches) {
         const reader = new FileReader();
-        reader.addEventListener(`load`, () => {
-          onReaderLoad(reader.result);
-        });
+        reader.addEventListener(`load`, onReaderLoad);
+
+        const onReaderLoad = () => {
+          cb(reader.result);
+          reader.removeEventListener(`load`, onReaderLoad);
+        };
 
         reader.readAsDataURL(file);
       }
+      fileChooser.removeEventListener(`change`, onFileChooserChange);
     };
   };
 
