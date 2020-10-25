@@ -18,6 +18,7 @@ const activatePage = () => {
   map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
   form.subscribeToUploadSuccess(onUploadSuccess);
   form.subscribeToUploadFailure(onUploadFailure);
+  form.subscribeToReset(onReset);
 
   form.enable();
   map.activate();
@@ -86,6 +87,10 @@ const onErrorMessageClick = () => {
 
 const onErrorMessageTryAgainClick = () => {
   removeErrorMessage();
+};
+
+const onReset = () => {
+  deactivatePage();
 };
 
 const onUploadSuccess = () => {

@@ -211,11 +211,11 @@ const onGuestCountChange = decorator.debounce(filterEventHandler);
 const onFeatureClick = decorator.debounce(filterEventHandler);
 
 const onMapMouseDown = (evt) => {
-  util.isMainMouseButtonEvent(evt, () => openPopup(evt));
+  util.isMainMouseButtonEvent(evt, () => isNormalPinEvent(evt, openPopup));
 };
 
 const onMapKeyDown = (evt) => {
-  util.isEnterEvent(evt, () => openPopup(evt));
+  util.isEnterEvent(evt, () => isNormalPinEvent(evt, openPopup));
 };
 
 const onMainPinMouseDown = (evt) => {
@@ -282,25 +282,19 @@ const closePopup = (popup) => {
   }
 };
 
-const openPopup = (evt) => {
-  const {target} = evt;
-
-  const isPin = target.classList.contains(`map__pin`);
-  const isPinImg = target.matches(`.map__pin img`);
-
-  if (!isPin && !isPinImg) {
-    return;
-  }
-
+const openPopup = (pinElement) => {
   closePopup();
-
-  const pinElement = isPinImg ? target.parentElement : target;
-  if (pinElement.classList.contains(`map__pin--main`)) {
-    return;
-  }
 
   const popupData = ads.get(+pinElement.dataset.key);
   renderPopup(popupData);
+};
+
+const isNormalPinEvent = (evt, action) => {
+  const lookup = evt.target.closest(`.map__pin:not([class*="map__pin--main"])`);
+
+  if (lookup) {
+    action(lookup);
+  }
 };
 
 const onLoadSuccess = (data) => {

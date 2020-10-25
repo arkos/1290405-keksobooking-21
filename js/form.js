@@ -23,6 +23,7 @@ const {map, http, preview} = window;
 
 let sendUploadSuccess;
 let sendUploadFailure;
+let sendReset;
 
 const adForm = document.querySelector(`.ad-form`);
 const title = adForm.querySelector(`#title`);
@@ -88,10 +89,11 @@ const enable = () => {
 };
 
 const disable = () => {
+  // adForm.reset();
+
   adForm.classList.add(`ad-form--disabled`);
   adForm.removeEventListener(`submit`, onFormSubmit);
   adForm.removeEventListener(`reset`, onFormReset);
-
 
   title.removeEventListener(`invalid`, onTitleInvalid);
   title.removeEventListener(`input`, onTitleInput);
@@ -109,7 +111,6 @@ const disable = () => {
 
   reset.addEventListener(`click`, onResetClick);
 
-  adForm.reset();
 
   sendUploadSuccess = null;
   sendUploadFailure = null;
@@ -251,10 +252,6 @@ const onUploadFailure = () => {
   }
 };
 
-const onResetClick = () => {
-  adForm.reset();
-};
-
 const onFormReset = () => {
   if (defaultAvatarSrc) {
     avatarPreview.src = defaultAvatarSrc;
@@ -263,6 +260,8 @@ const onFormReset = () => {
   for (const currentPhotoPreview of accPhotoPreview.children) {
     currentPhotoPreview.remove();
   }
+
+  setTimeout(sendReset, 0);
 };
 
 const setMainPinCoordinates = (coords) => {
@@ -278,9 +277,14 @@ const subscribeToUploadFailure = (cb) => {
   sendUploadFailure = cb;
 };
 
+const subscribeToReset = (cb) => {
+  sendReset = cb;
+};
+
 window.form = {
   enable,
   disable,
   subscribeToUploadSuccess,
-  subscribeToUploadFailure
+  subscribeToUploadFailure,
+  subscribeToReset
 };

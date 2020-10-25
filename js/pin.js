@@ -20,7 +20,6 @@ const create = (pinTemplate, ad, key) => {
 
   return pin;
 };
-
 window.pin = {
   create,
 };
