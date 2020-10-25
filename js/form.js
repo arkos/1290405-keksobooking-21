@@ -43,6 +43,8 @@ const defaultAvatarSrc = avatarPreview.src;
 const accPhotoFileChooser = adForm.querySelector(`#images`);
 const accPhotoPreview = adForm.querySelector(`.ad-form__photo`);
 
+let isInsideResetEvent = false;
+
 const enable = () => {
   adForm.classList.remove(`ad-form--disabled`);
   adForm.addEventListener(`submit`, onFormSubmit);
@@ -60,8 +62,6 @@ const enable = () => {
 
   roomsNumber.addEventListener(`change`, onRoomsNumberChange);
   guestsNumber.addEventListener(`change`, onGuestNumberChange);
-
-  reset.addEventListener(`click`, onResetClick);
 
   enableFilters();
   map.subscribeToMainPinUpdates(setMainPinCoordinates);
@@ -89,7 +89,10 @@ const enable = () => {
 };
 
 const disable = () => {
-  // adForm.reset();
+  if (!isInsideResetEvent) {
+    adForm.reset();
+    isInsideResetEvent = false;
+  }
 
   adForm.classList.add(`ad-form--disabled`);
   adForm.removeEventListener(`submit`, onFormSubmit);
@@ -108,9 +111,6 @@ const disable = () => {
 
   roomsNumber.removeEventListener(`change`, onRoomsNumberChange);
   guestsNumber.removeEventListener(`change`, onGuestNumberChange);
-
-  reset.addEventListener(`click`, onResetClick);
-
 
   sendUploadSuccess = null;
   sendUploadFailure = null;
@@ -261,7 +261,10 @@ const onFormReset = () => {
     currentPhotoPreview.remove();
   }
 
-  setTimeout(sendReset, 0);
+  setTimeout(() => {
+    isInsideResetEvent = true;
+    sendReset();
+  }, 0);
 };
 
 const setMainPinCoordinates = (coords) => {
