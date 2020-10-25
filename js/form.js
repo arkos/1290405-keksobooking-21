@@ -43,12 +43,9 @@ const defaultAvatarSrc = avatarPreview.src;
 const accPhotoFileChooser = adForm.querySelector(`#images`);
 const accPhotoPreview = adForm.querySelector(`.ad-form__photo`);
 
-let isInsideResetEvent = false;
-
 const enable = () => {
   adForm.classList.remove(`ad-form--disabled`);
   adForm.addEventListener(`submit`, onFormSubmit);
-  adForm.addEventListener(`reset`, onFormReset);
 
   title.addEventListener(`invalid`, onTitleInvalid);
   title.addEventListener(`input`, onTitleInput);
@@ -62,6 +59,8 @@ const enable = () => {
 
   roomsNumber.addEventListener(`change`, onRoomsNumberChange);
   guestsNumber.addEventListener(`change`, onGuestNumberChange);
+
+  reset.addEventListener(`click`, onResetClick);
 
   enableFilters();
   map.subscribeToMainPinUpdates(setMainPinCoordinates);
@@ -89,14 +88,8 @@ const enable = () => {
 };
 
 const disable = () => {
-  if (!isInsideResetEvent) {
-    adForm.reset();
-    isInsideResetEvent = false;
-  }
-
   adForm.classList.add(`ad-form--disabled`);
   adForm.removeEventListener(`submit`, onFormSubmit);
-  adForm.removeEventListener(`reset`, onFormReset);
 
   title.removeEventListener(`invalid`, onTitleInvalid);
   title.removeEventListener(`input`, onTitleInput);
@@ -111,6 +104,8 @@ const disable = () => {
 
   roomsNumber.removeEventListener(`change`, onRoomsNumberChange);
   guestsNumber.removeEventListener(`change`, onGuestNumberChange);
+
+  reset.removeEventListener(`click`, onResetClick);
 
   sendUploadSuccess = null;
   sendUploadFailure = null;
@@ -241,6 +236,8 @@ const onFormSubmit = (evt) => {
 };
 
 const onUploadSuccess = (response) => {
+  adForm.reset();
+  restoreDefaultPreviews();
   if (sendUploadSuccess) {
     sendUploadSuccess(response);
   }
@@ -252,7 +249,12 @@ const onUploadFailure = () => {
   }
 };
 
-const onFormReset = () => {
+const onResetClick = () => {
+  restoreDefaultPreviews();
+  setTimeout(sendReset, 0);
+};
+
+const restoreDefaultPreviews = () => {
   if (defaultAvatarSrc) {
     avatarPreview.src = defaultAvatarSrc;
   }
@@ -260,11 +262,6 @@ const onFormReset = () => {
   for (const currentPhotoPreview of accPhotoPreview.children) {
     currentPhotoPreview.remove();
   }
-
-  setTimeout(() => {
-    isInsideResetEvent = true;
-    sendReset();
-  }, 0);
 };
 
 const setMainPinCoordinates = (coords) => {
