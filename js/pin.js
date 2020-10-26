@@ -4,6 +4,11 @@ const MAP_PIN_WIDTH = 50;
 const MAP_PIN_HEIGHT = 70;
 
 const create = (pinTemplate, ad, key) => {
+
+  if (!ad || !ad.offer) {
+    return null;
+  }
+
   const pin = pinTemplate.cloneNode(true);
 
   pin.dataset.key = key;
@@ -15,7 +20,11 @@ const create = (pinTemplate, ad, key) => {
   pin.style.top = `${pinTopPosition}px`;
 
   const pinImage = pin.querySelector(`img`);
-  pinImage.src = ad.author.avatar;
+
+  if (ad.author && ad.author.avatar) {
+    pinImage.src = ad.author && ad.author.avatar;
+  }
+
   pinImage.alt = ad.offer.title;
 
   return pin;

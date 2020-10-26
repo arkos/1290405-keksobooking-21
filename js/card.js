@@ -44,7 +44,11 @@ const create = (ad) => {
   renderPhotos(popup, ad.offer.photos);
 
   const popupAvatar = popup.querySelector(`.popup__avatar`);
-  popupAvatar.src = ad.author.avatar;
+
+  if (ad.author && ad.author.avatar) {
+    popupAvatar.src = ad.author.avatar;
+  }
+
 
   return popup;
 };

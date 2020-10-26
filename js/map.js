@@ -138,12 +138,17 @@ const getMainPinSpikeCoords = () => {
 };
 
 const renderPins = (pinsToRender) => {
-  const pinElements = [];
-  pinsToRender.forEach((pinToRender, key) => pinElements.push(pin.create(pinTemplate, pinToRender, key)));
+  const newPinElements = [];
+  pinsToRender.forEach((pinToRender, key) => {
+    const newPinElement = pin.create(pinTemplate, pinToRender, key);
+    if (newPinElement) {
+      newPinElements.push(newPinElement);
+    }
+  });
 
   removeCurrentPins();
 
-  mapPins.append(...pinElements);
+  mapPins.append(...newPinElements);
 };
 
 const removeCurrentPins = () => {
@@ -347,6 +352,8 @@ const createAds = (data) => {
   if (!data || data.length === 0) {
     return null;
   }
+
+  data.forEach((item) => delete item.author);
 
   const storage = new Map();
   for (let i = 1; i <= data.length; i++) {
