@@ -13,34 +13,46 @@ const popupTemplate = document
 
 let sendPopupClose;
 
+const renderTextContent = (element, predicate, content) => {
+
+  if (!element) {
+    return;
+  }
+
+  if (predicate) {
+    element.textContent = content;
+  } else {
+    element.hidden = true;
+  }
+};
+
 const create = (ad) => {
   const popup = popupTemplate.cloneNode(true);
 
   popup.dataset.key = ad.key;
 
   const popupTitle = popup.querySelector(`.popup__title`);
-  popupTitle.textContent = ad.offer.title || ``;
+  renderTextContent(popupTitle, ad.offer.title, ad.offer.title);
 
   const popupAddress = popup.querySelector(`.popup__text--address`);
-  popupAddress.textContent = ad.offer.address || ``;
+  renderTextContent(popupAddress, ad.offer.address, ad.offer.address);
 
   const popupPrice = popup.querySelector(`.popup__text--price`);
-  popupPrice.textContent = ad.offer.price ? `${ad.offer.price}₽/ночь` : ``;
+  renderTextContent(popupPrice, ad.offer.price, `${ad.offer.price}₽/ночь`);
 
   const popupType = popup.querySelector(`.popup__type`);
-  popupType.textContent = getAccomodationTypeRu(ad.offer.type) || ``;
+  renderTextContent(popupType, ad.offer.type, getAccomodationTypeRu(ad.offer.type));
 
   const popupCapacity = popup.querySelector(`.popup__text--capacity`);
-  popupCapacity.textContent = ad.offer ? getCapacityDescription(ad.offer) : ``;
+  renderTextContent(popupCapacity, ad.offer.rooms && ad.offer.guests, getCapacityDescription(ad.offer));
 
   const popupCheckInOut = popup.querySelector(`.popup__text--time`);
-  popupCheckInOut.textContent = ad.offer.checkin && ad.offer.checkout ?
-    `Заезд после ${ad.offer.checkin}, выезд до ${ad.offer.checkout}` : ``;
+  renderTextContent(popupCheckInOut, ad.offer.checkin && ad.offer.checkout, `Заезд после ${ad.offer.checkin}, выезд до ${ad.offer.checkout}`);
 
   renderFeatures(popup, ad.offer.features);
 
   const popupDescription = popup.querySelector(`.popup__description`);
-  popupDescription.textContent = ad.offer.description || ``;
+  renderTextContent(popupDescription, ad.offer.description, ad.offer.description);
 
   renderPhotos(popup, ad.offer.photos);
 

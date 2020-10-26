@@ -358,8 +358,6 @@ const createAds = (data) => {
     return null;
   }
 
-  data.forEach((item) => delete item.offer.address);
-
   const storage = new Map();
   for (let i = 1; i <= data.length; i++) {
     storage.set(i, data[i - 1]);
