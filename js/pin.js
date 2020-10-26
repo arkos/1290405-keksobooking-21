@@ -5,7 +5,7 @@ const MAP_PIN_HEIGHT = 70;
 
 const create = (pinTemplate, ad, key) => {
 
-  if (!ad || !ad.offer) {
+  if (!(ad && ad.offer && ad.location && ad.location.x && ad.location.y)) {
     return null;
   }
 

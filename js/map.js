@@ -341,7 +341,12 @@ const onLoadSuccess = (data) => {
   ads = createAds(data);
   mainPinSpikeOffset.y = MAIN_PIN_ACTIVE_HEIGHT;
   updatePins();
-  enableFilters();
+
+  const currentPins = mapPins.querySelectorAll(`.map__pin:not([class*="map__pin--main"])`);
+  if (currentPins && currentPins.length > 0) {
+    enableFilters();
+  }
+
 };
 
 const onLoadFailure = () => {
@@ -353,7 +358,7 @@ const createAds = (data) => {
     return null;
   }
 
-  data.forEach((item) => delete item.author);
+  data.forEach((item) => delete item.offer.address);
 
   const storage = new Map();
   for (let i = 1; i <= data.length; i++) {
