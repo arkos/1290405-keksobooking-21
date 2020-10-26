@@ -51,6 +51,7 @@ const activateMainPin = (status) => {
 
 const activate = () => {
   map.classList.remove(`map--faded`);
+  card.subscribeToPopupClose(onPopupClose);
 
   activateMainPin(true);
 
@@ -65,8 +66,8 @@ const activate = () => {
 
 const deactivate = () => {
   map.classList.add(`map--faded`);
+  deactivateNormalPin();
   removeCurrentPins();
-  closePopup();
 
   activateMainPin(false);
 
@@ -196,8 +197,39 @@ const applyFilterByFeature = (ad) => {
 };
 
 const filterEventHandler = () => {
+  deactivateNormalPin();
   updatePins();
-  closePopup();
+};
+
+const activateNormalPin = (pinToActivate) => {
+  const currentActivePin = mapPins.querySelector(`.map__pin--active`);
+  if (currentActivePin) {
+    deactivateNormalPin(currentActivePin);
+  }
+
+  pinToActivate.classList.add(`map__pin--active`);
+
+  openPopup(pinToActivate);
+};
+
+const deactivateNormalPin = (pinToDeactivate) => {
+  if (!pinToDeactivate) {
+    pinToDeactivate = mapPins.querySelector(`.map__pin--active`);
+  }
+
+  if (pinToDeactivate) {
+    pinToDeactivate.classList.remove(`map__pin--active`);
+    closePopup(pinToDeactivate);
+  }
+};
+
+const onPopupClose = (popupToClose) => {
+  if (!popupToClose) {
+    return;
+  }
+
+  const pinToDeactivate = map.querySelector(`.map__pin[data-key="${popupToClose.dataset.key}"]`);
+  deactivateNormalPin(pinToDeactivate);
 };
 
 const onAccomodationTypeChange = decorator.debounce(filterEventHandler);
@@ -211,11 +243,11 @@ const onGuestCountChange = decorator.debounce(filterEventHandler);
 const onFeatureClick = decorator.debounce(filterEventHandler);
 
 const onMapMouseDown = (evt) => {
-  util.isMainMouseButtonEvent(evt, () => isNormalPinEvent(evt, openPopup));
+  util.isMainMouseButtonEvent(evt, () => isNormalPinEvent(evt, activateNormalPin));
 };
 
 const onMapKeyDown = (evt) => {
-  util.isEnterEvent(evt, () => isNormalPinEvent(evt, openPopup));
+  util.isEnterEvent(evt, () => isNormalPinEvent(evt, activateNormalPin));
 };
 
 const onMainPinMouseDown = (evt) => {
@@ -272,20 +304,23 @@ const onMainPinMouseDown = (evt) => {
   document.addEventListener(`mouseup`, onMouseUp);
 };
 
-const closePopup = (popup) => {
-  if (!popup) {
-    popup = map.querySelector(`.map__card`);
+const closePopup = (pinToDeactivate) => {
+  if (!pinToDeactivate) {
+    return;
   }
 
-  if (popup) {
-    card.close(popup);
+  const popupToClose = map.querySelector(`.map__card[data-key="${pinToDeactivate.dataset.key}"]`);
+
+  if (popupToClose) {
+    card.close(popupToClose);
   }
 };
 
 const openPopup = (pinElement) => {
-  closePopup();
+  const key = +pinElement.dataset.key;
+  const popupData = ads.get(key);
+  popupData.key = key;
 
-  const popupData = ads.get(+pinElement.dataset.key);
   renderPopup(popupData);
 };
 
@@ -349,5 +384,5 @@ window.map = {
   removeOnMainPinMouseDown,
   removeOnMainPinKeyDown,
   subscribeToMainPinUpdates,
-  closePopup
+  deactivateAnyPin: () => deactivateNormalPin(null)
 };

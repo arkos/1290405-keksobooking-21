@@ -103,7 +103,7 @@ const onUploadFailure = () => {
 };
 
 const onEscKeyDown = (evt) => {
-  util.isEscEvent(evt, map.closePopup);
+  util.isEscEvent(evt, map.deactivateAnyPin);
 };
 
 const onMainPinInactiveMouseDown = (evt) => {

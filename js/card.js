@@ -11,8 +11,12 @@ const popupTemplate = document
   .querySelector(`#card`)
   .content.querySelector(`.map__card`);
 
+let sendPopupClose;
+
 const create = (ad) => {
   const popup = popupTemplate.cloneNode(true);
+
+  popup.dataset.key = ad.key;
 
   const popupTitle = popup.querySelector(`.popup__title`);
   popupTitle.textContent = ad.offer.title;
@@ -104,8 +108,14 @@ const renderFeatures = (adElement, features) => {
   popupFeatures.append(fragment);
 };
 
+const subscribeToPopupClose = (cb) => {
+  sendPopupClose = cb;
+};
+
 const onPopupCloseClick = (evt) => {
-  window.card.close(evt.target.parentElement);
+  if (sendPopupClose) {
+    sendPopupClose(evt.target.parentElement);
+  }
 };
 
 const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
@@ -124,5 +134,6 @@ window.card = {
     elementBefore.before(popup);
     const popupClose = popup.querySelector(`.popup__close`);
     popupClose.addEventListener(`click`, onPopupCloseClick);
-  }
+  },
+  subscribeToPopupClose
 };
