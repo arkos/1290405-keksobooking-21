@@ -1,5 +1,7 @@
 'use strict';
 
+const SHOW_ERROR_MESSAGE_TIMEOUT = 100;
+
 const {map, form, util} = window;
 
 const main = document.querySelector(`main`);
@@ -121,7 +123,7 @@ const onUploadFailure = () => {
 const onLoadFailure = () => {
   setTimeout(() => {
     showErrorMessage(createCustomErrorMessage());
-  }, 100);
+  }, SHOW_ERROR_MESSAGE_TIMEOUT);
 };
 
 const onEscKeyDown = (evt) => {
