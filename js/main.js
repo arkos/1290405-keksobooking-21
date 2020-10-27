@@ -73,6 +73,20 @@ const removeErrorMessage = () => {
   document.removeEventListener(`keydown`, onErrorMessageEscKeyDown);
 };
 
+const createCustomErrorMessage = () => {
+  const errorMessage = document.createElement(`p`);
+  errorMessage.textContent = `Ошибка запроса при загрузке данных сервера.`;
+  errorMessage.classList.add(`error__message`);
+
+  const actionButton = document.createElement(`button`);
+  actionButton.classList.add(`error__button`);
+  actionButton.textContent = `Закрыть`;
+
+  const fragment = document.createDocumentFragment();
+  fragment.append(errorMessage, actionButton);
+  return fragment;
+};
+
 // Event handlers
 
 const onSuccessMessageEscKeyDown = (evt) => {
@@ -105,21 +119,6 @@ const onUploadFailure = () => {
 };
 
 const onLoadFailure = () => {
-
-  const createCustomErrorMessage = () => {
-    const errorMessage = document.createElement(`p`);
-    errorMessage.textContent = `Ошибка запроса при загрузке данных сервера.`;
-    errorMessage.classList.add(`error__message`);
-
-    const actionButton = document.createElement(`button`);
-    actionButton.classList.add(`error__button`);
-    actionButton.textContent = `Закрыть`;
-
-    const fragment = document.createDocumentFragment();
-    fragment.append(errorMessage, actionButton);
-    return fragment;
-  };
-
   setTimeout(() => {
     showErrorMessage(createCustomErrorMessage());
   }, 100);
