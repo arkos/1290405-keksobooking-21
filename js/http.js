@@ -49,7 +49,6 @@ const load = (url, onSuccess, onFailure) => {
 
   const xhr = new XMLHttpRequest();
   xhr.responseType = `json`;
-  xhr.timeout = 1;
   xhr.addEventListener(`load`, onLoad);
   xhr.addEventListener(`error`, onError);
   xhr.addEventListener(`timeout`, () => onTimeout(xhr));

@@ -11,8 +11,6 @@ const errorMessageTemplate = document.querySelector(`#error`)
   .content
   .querySelector(`.error`);
 
-const errorTryAgain = errorMessageTemplate.querySelector(`.error__button`);
-
 const activatePage = () => {
   map.removeOnMainPinMouseDown(onMainPinInactiveMouseDown);
   map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
@@ -52,18 +50,20 @@ const removeSuccessMessage = () => {
   document.removeEventListener(`keydown`, onSuccessMessageEscKeyDown);
 };
 
-const showErrorMessage = (error) => {
-  const errorMessage = errorMessageTemplate.cloneNode(true);
+const showErrorMessage = (customizer) => {
+  let errorMessage;
 
-  if (error) {
-    const errorText = errorMessage.querySelector(`.error__message`);
-    errorText.textContent = error;
+  if (customizer) {
+    errorMessage = document.createElement(`div`);
+    errorMessage.classList.add(`error`);
+    errorMessage.append(customizer);
+  } else {
+    errorMessage = errorMessageTemplate.cloneNode(true);
   }
 
   main.append(errorMessage);
   document.addEventListener(`click`, onErrorMessageClick);
   document.addEventListener(`keydown`, onErrorMessageEscKeyDown);
-  errorTryAgain.addEventListener(`click`, onErrorMessageTryAgainClick);
 };
 
 const removeErrorMessage = () => {
@@ -71,9 +71,7 @@ const removeErrorMessage = () => {
   errorMessage.remove();
   document.removeEventListener(`click`, onErrorMessageClick);
   document.removeEventListener(`keydown`, onErrorMessageEscKeyDown);
-  errorTryAgain.removeEventListener(`click`, onErrorMessageTryAgainClick);
 };
-
 
 // Event handlers
 
@@ -93,10 +91,6 @@ const onErrorMessageClick = () => {
   removeErrorMessage();
 };
 
-const onErrorMessageTryAgainClick = () => {
-  removeErrorMessage();
-};
-
 const onReset = () => {
   deactivatePage();
 };
@@ -110,8 +104,25 @@ const onUploadFailure = () => {
   showErrorMessage();
 };
 
-const onLoadFailure = (error) => {
-  showErrorMessage(error);
+const onLoadFailure = () => {
+
+  const createCustomErrorMessage = () => {
+    const errorMessage = document.createElement(`p`);
+    errorMessage.textContent = `Ошибка запроса при загрузке данных сервера.`;
+    errorMessage.classList.add(`error__message`);
+
+    const actionButton = document.createElement(`button`);
+    actionButton.classList.add(`error__button`);
+    actionButton.textContent = `Закрыть`;
+
+    const fragment = document.createDocumentFragment();
+    fragment.append(errorMessage, actionButton);
+    return fragment;
+  };
+
+  setTimeout(() => {
+    showErrorMessage(createCustomErrorMessage());
+  }, 100);
 };
 
 const onEscKeyDown = (evt) => {
