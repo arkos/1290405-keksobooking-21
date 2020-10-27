@@ -35,10 +35,6 @@ const featuresContainer = filters.querySelector(`.map__features`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 const mapPins = document.querySelector(`.map__pins`);
 
-const errorMessageTemplate = document.querySelector(`#error`)
-  .content
-  .querySelector(`.error`);
-
 const mainPinSpikeOffset = {
   x: Math.floor(MAIN_PIN_WIDTH / 2),
   y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2),
