@@ -35,12 +35,17 @@ const featuresContainer = filters.querySelector(`.map__features`);
 const pinTemplate = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 const mapPins = document.querySelector(`.map__pins`);
 
+const errorMessageTemplate = document.querySelector(`#error`)
+  .content
+  .querySelector(`.error`);
+
 const mainPinSpikeOffset = {
   x: Math.floor(MAIN_PIN_WIDTH / 2),
   y: Math.floor(MAIN_PIN_INACTIVE_HEIGHT / 2),
 };
 
 let sendMainPinUpdated;
+let sendLoadFailure;
 
 let ads;
 
@@ -346,11 +351,10 @@ const onLoadSuccess = (data) => {
   if (currentPins && currentPins.length > 0) {
     enableFilters();
   }
-
 };
 
-const onLoadFailure = () => {
-  // Future error handling
+const onLoadFailure = (error) => {
+  sendLoadFailure(error);
 };
 
 const createAds = (data) => {
@@ -367,6 +371,10 @@ const createAds = (data) => {
 
 const subscribeToMainPinUpdates = (cb) => {
   sendMainPinUpdated = cb;
+};
+
+const subscribeToLoadFailure = (cb) => {
+  sendLoadFailure = cb;
 };
 
 const moveMainPinSpikeTo = (moveLeftTo, moveTopTo) => {
@@ -394,5 +402,6 @@ window.map = {
   removeOnMainPinMouseDown,
   removeOnMainPinKeyDown,
   subscribeToMainPinUpdates,
+  subscribeToLoadFailure,
   deactivateAnyPin: () => deactivateNormalPin(null)
 };

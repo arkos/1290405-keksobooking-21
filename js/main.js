@@ -16,6 +16,8 @@ const errorTryAgain = errorMessageTemplate.querySelector(`.error__button`);
 const activatePage = () => {
   map.removeOnMainPinMouseDown(onMainPinInactiveMouseDown);
   map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
+  map.subscribeToLoadFailure(onLoadFailure);
+
   form.subscribeToUploadSuccess(onUploadSuccess);
   form.subscribeToUploadFailure(onUploadFailure);
   form.subscribeToReset(onReset);
@@ -50,8 +52,14 @@ const removeSuccessMessage = () => {
   document.removeEventListener(`keydown`, onSuccessMessageEscKeyDown);
 };
 
-const showErrorMessage = () => {
+const showErrorMessage = (error) => {
   const errorMessage = errorMessageTemplate.cloneNode(true);
+
+  if (error) {
+    const errorText = errorMessage.querySelector(`.error__message`);
+    errorText.textContent = error;
+  }
+
   main.append(errorMessage);
   document.addEventListener(`click`, onErrorMessageClick);
   document.addEventListener(`keydown`, onErrorMessageEscKeyDown);
@@ -100,6 +108,10 @@ const onUploadSuccess = () => {
 
 const onUploadFailure = () => {
   showErrorMessage();
+};
+
+const onLoadFailure = (error) => {
+  showErrorMessage(error);
 };
 
 const onEscKeyDown = (evt) => {

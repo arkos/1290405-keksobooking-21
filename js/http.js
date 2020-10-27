@@ -41,7 +41,7 @@ const load = (url, onSuccess, onFailure) => {
 
   const getDefaultResponse = () => `Статус ответа: ${xhr.status} ${xhr.statusText}`;
 
-  const onError = () => XHR_ERROR_GENERIC;
+  const onError = () => onFailure(XHR_ERROR_GENERIC);
 
   const onTimeout = () => {
     onFailure(`Запрос не успел выполниться за ${xhr.timeout} мс`);
@@ -49,6 +49,7 @@ const load = (url, onSuccess, onFailure) => {
 
   const xhr = new XMLHttpRequest();
   xhr.responseType = `json`;
+  xhr.timeout = 1;
   xhr.addEventListener(`load`, onLoad);
   xhr.addEventListener(`error`, onError);
   xhr.addEventListener(`timeout`, () => onTimeout(xhr));
