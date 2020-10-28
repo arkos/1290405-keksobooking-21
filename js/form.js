@@ -23,6 +23,7 @@ const {map, http, preview} = window;
 
 let sendUploadSuccess;
 let sendUploadFailure;
+let sendReset;
 
 const adForm = document.querySelector(`.ad-form`);
 const title = adForm.querySelector(`#title`);
@@ -45,7 +46,6 @@ const accPhotoPreview = adForm.querySelector(`.ad-form__photo`);
 const enable = () => {
   adForm.classList.remove(`ad-form--disabled`);
   adForm.addEventListener(`submit`, onFormSubmit);
-  adForm.addEventListener(`reset`, onFormReset);
 
   title.addEventListener(`invalid`, onTitleInvalid);
   title.addEventListener(`input`, onTitleInput);
@@ -90,8 +90,6 @@ const enable = () => {
 const disable = () => {
   adForm.classList.add(`ad-form--disabled`);
   adForm.removeEventListener(`submit`, onFormSubmit);
-  adForm.removeEventListener(`reset`, onFormReset);
-
 
   title.removeEventListener(`invalid`, onTitleInvalid);
   title.removeEventListener(`input`, onTitleInput);
@@ -107,9 +105,7 @@ const disable = () => {
   roomsNumber.removeEventListener(`change`, onRoomsNumberChange);
   guestsNumber.removeEventListener(`change`, onGuestNumberChange);
 
-  reset.addEventListener(`click`, onResetClick);
-
-  adForm.reset();
+  reset.removeEventListener(`click`, onResetClick);
 
   sendUploadSuccess = null;
   sendUploadFailure = null;
@@ -240,6 +236,8 @@ const onFormSubmit = (evt) => {
 };
 
 const onUploadSuccess = (response) => {
+  adForm.reset();
+  restoreDefaultPreviews();
   if (sendUploadSuccess) {
     sendUploadSuccess(response);
   }
@@ -252,10 +250,11 @@ const onUploadFailure = () => {
 };
 
 const onResetClick = () => {
-  adForm.reset();
+  restoreDefaultPreviews();
+  setTimeout(sendReset, 0);
 };
 
-const onFormReset = () => {
+const restoreDefaultPreviews = () => {
   if (defaultAvatarSrc) {
     avatarPreview.src = defaultAvatarSrc;
   }
@@ -278,9 +277,14 @@ const subscribeToUploadFailure = (cb) => {
   sendUploadFailure = cb;
 };
 
+const subscribeToReset = (cb) => {
+  sendReset = cb;
+};
+
 window.form = {
   enable,
   disable,
   subscribeToUploadSuccess,
-  subscribeToUploadFailure
+  subscribeToUploadFailure,
+  subscribeToReset
 };

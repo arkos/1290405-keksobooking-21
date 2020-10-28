@@ -1,5 +1,7 @@
 'use strict';
 
+const SHOW_ERROR_MESSAGE_TIMEOUT = 100;
+
 const {map, form, util} = window;
 
 const main = document.querySelector(`main`);
@@ -11,13 +13,14 @@ const errorMessageTemplate = document.querySelector(`#error`)
   .content
   .querySelector(`.error`);
 
-const errorTryAgain = errorMessageTemplate.querySelector(`.error__button`);
-
 const activatePage = () => {
   map.removeOnMainPinMouseDown(onMainPinInactiveMouseDown);
   map.removeOnMainPinKeyDown(onMainPinInactiveKeyDown);
+  map.subscribeToLoadFailure(onLoadFailure);
+
   form.subscribeToUploadSuccess(onUploadSuccess);
   form.subscribeToUploadFailure(onUploadFailure);
+  form.subscribeToReset(onReset);
 
   form.enable();
   map.activate();
@@ -49,12 +52,20 @@ const removeSuccessMessage = () => {
   document.removeEventListener(`keydown`, onSuccessMessageEscKeyDown);
 };
 
-const showErrorMessage = () => {
-  const errorMessage = errorMessageTemplate.cloneNode(true);
+const showErrorMessage = (customizer) => {
+  let errorMessage;
+
+  if (customizer) {
+    errorMessage = document.createElement(`div`);
+    errorMessage.classList.add(`error`);
+    errorMessage.append(customizer);
+  } else {
+    errorMessage = errorMessageTemplate.cloneNode(true);
+  }
+
   main.append(errorMessage);
   document.addEventListener(`click`, onErrorMessageClick);
   document.addEventListener(`keydown`, onErrorMessageEscKeyDown);
-  errorTryAgain.addEventListener(`click`, onErrorMessageTryAgainClick);
 };
 
 const removeErrorMessage = () => {
@@ -62,9 +73,21 @@ const removeErrorMessage = () => {
   errorMessage.remove();
   document.removeEventListener(`click`, onErrorMessageClick);
   document.removeEventListener(`keydown`, onErrorMessageEscKeyDown);
-  errorTryAgain.removeEventListener(`click`, onErrorMessageTryAgainClick);
 };
 
+const createCustomErrorMessage = () => {
+  const errorMessage = document.createElement(`p`);
+  errorMessage.textContent = `Ошибка запроса при загрузке данных сервера.`;
+  errorMessage.classList.add(`error__message`);
+
+  const actionButton = document.createElement(`button`);
+  actionButton.classList.add(`error__button`);
+  actionButton.textContent = `Закрыть`;
+
+  const fragment = document.createDocumentFragment();
+  fragment.append(errorMessage, actionButton);
+  return fragment;
+};
 
 // Event handlers
 
@@ -84,8 +107,8 @@ const onErrorMessageClick = () => {
   removeErrorMessage();
 };
 
-const onErrorMessageTryAgainClick = () => {
-  removeErrorMessage();
+const onReset = () => {
+  deactivatePage();
 };
 
 const onUploadSuccess = () => {
@@ -97,8 +120,14 @@ const onUploadFailure = () => {
   showErrorMessage();
 };
 
+const onLoadFailure = () => {
+  setTimeout(() => {
+    showErrorMessage(createCustomErrorMessage());
+  }, SHOW_ERROR_MESSAGE_TIMEOUT);
+};
+
 const onEscKeyDown = (evt) => {
-  util.isEscEvent(evt, map.closePopup);
+  util.isEscEvent(evt, map.deactivateAnyPin);
 };
 
 const onMainPinInactiveMouseDown = (evt) => {
