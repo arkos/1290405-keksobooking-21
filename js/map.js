@@ -41,6 +41,7 @@ const mainPinSpikeOffset = {
 };
 
 let sendMainPinUpdated;
+let sendLoadFailure;
 
 let ads;
 
@@ -51,6 +52,7 @@ const activateMainPin = (status) => {
 
 const activate = () => {
   map.classList.remove(`map--faded`);
+  card.subscribeToPopupClose(onPopupClose);
 
   activateMainPin(true);
 
@@ -65,8 +67,8 @@ const activate = () => {
 
 const deactivate = () => {
   map.classList.add(`map--faded`);
+  deactivateNormalPin();
   removeCurrentPins();
-  closePopup();
 
   activateMainPin(false);
 
@@ -137,12 +139,17 @@ const getMainPinSpikeCoords = () => {
 };
 
 const renderPins = (pinsToRender) => {
-  const pinElements = [];
-  pinsToRender.forEach((pinToRender, key) => pinElements.push(pin.create(pinTemplate, pinToRender, key)));
+  const newPinElements = [];
+  pinsToRender.forEach((pinToRender, key) => {
+    const newPinElement = pin.create(pinTemplate, pinToRender, key);
+    if (newPinElement) {
+      newPinElements.push(newPinElement);
+    }
+  });
 
   removeCurrentPins();
 
-  mapPins.append(...pinElements);
+  mapPins.append(...newPinElements);
 };
 
 const removeCurrentPins = () => {
@@ -196,8 +203,39 @@ const applyFilterByFeature = (ad) => {
 };
 
 const filterEventHandler = () => {
+  deactivateNormalPin();
   updatePins();
-  closePopup();
+};
+
+const activateNormalPin = (pinToActivate) => {
+  const currentActivePin = mapPins.querySelector(`.map__pin--active`);
+  if (currentActivePin) {
+    deactivateNormalPin(currentActivePin);
+  }
+
+  pinToActivate.classList.add(`map__pin--active`);
+
+  openPopup(pinToActivate);
+};
+
+const deactivateNormalPin = (pinToDeactivate) => {
+  if (!pinToDeactivate) {
+    pinToDeactivate = mapPins.querySelector(`.map__pin--active`);
+  }
+
+  if (pinToDeactivate) {
+    pinToDeactivate.classList.remove(`map__pin--active`);
+    closePopup(pinToDeactivate);
+  }
+};
+
+const onPopupClose = (popupToClose) => {
+  if (!popupToClose) {
+    return;
+  }
+
+  const pinToDeactivate = map.querySelector(`.map__pin[data-key="${popupToClose.dataset.key}"]`);
+  deactivateNormalPin(pinToDeactivate);
 };
 
 const onAccomodationTypeChange = decorator.debounce(filterEventHandler);
@@ -211,11 +249,11 @@ const onGuestCountChange = decorator.debounce(filterEventHandler);
 const onFeatureClick = decorator.debounce(filterEventHandler);
 
 const onMapMouseDown = (evt) => {
-  util.isMainMouseButtonEvent(evt, () => openPopup(evt));
+  util.isMainMouseButtonEvent(evt, () => isNormalPinEvent(evt, activateNormalPin));
 };
 
 const onMapKeyDown = (evt) => {
-  util.isEnterEvent(evt, () => openPopup(evt));
+  util.isEnterEvent(evt, () => isNormalPinEvent(evt, activateNormalPin));
 };
 
 const onMainPinMouseDown = (evt) => {
@@ -272,46 +310,47 @@ const onMainPinMouseDown = (evt) => {
   document.addEventListener(`mouseup`, onMouseUp);
 };
 
-const closePopup = (popup) => {
-  if (!popup) {
-    popup = map.querySelector(`.map__card`);
+const closePopup = (pinToDeactivate) => {
+  if (!pinToDeactivate) {
+    return;
   }
 
-  if (popup) {
-    card.close(popup);
+  const popupToClose = map.querySelector(`.map__card[data-key="${pinToDeactivate.dataset.key}"]`);
+
+  if (popupToClose) {
+    card.close(popupToClose);
   }
 };
 
-const openPopup = (evt) => {
-  const {target} = evt;
+const openPopup = (pinElement) => {
+  const key = +pinElement.dataset.key;
+  const popupData = ads.get(key);
+  popupData.key = key;
 
-  const isPin = target.classList.contains(`map__pin`);
-  const isPinImg = target.matches(`.map__pin img`);
-
-  if (!isPin && !isPinImg) {
-    return;
-  }
-
-  closePopup();
-
-  const pinElement = isPinImg ? target.parentElement : target;
-  if (pinElement.classList.contains(`map__pin--main`)) {
-    return;
-  }
-
-  const popupData = ads.get(+pinElement.dataset.key);
   renderPopup(popupData);
+};
+
+const isNormalPinEvent = (evt, action) => {
+  const lookup = evt.target.closest(`.map__pin:not([class*="map__pin--main"])`);
+
+  if (lookup) {
+    action(lookup);
+  }
 };
 
 const onLoadSuccess = (data) => {
   ads = createAds(data);
   mainPinSpikeOffset.y = MAIN_PIN_ACTIVE_HEIGHT;
   updatePins();
-  enableFilters();
+
+  const currentPins = mapPins.querySelectorAll(`.map__pin:not([class*="map__pin--main"])`);
+  if (currentPins && currentPins.length > 0) {
+    enableFilters();
+  }
 };
 
-const onLoadFailure = () => {
-  // Future error handling
+const onLoadFailure = (error) => {
+  sendLoadFailure(error);
 };
 
 const createAds = (data) => {
@@ -328,6 +367,10 @@ const createAds = (data) => {
 
 const subscribeToMainPinUpdates = (cb) => {
   sendMainPinUpdated = cb;
+};
+
+const subscribeToLoadFailure = (cb) => {
+  sendLoadFailure = cb;
 };
 
 const moveMainPinSpikeTo = (moveLeftTo, moveTopTo) => {
@@ -355,5 +398,6 @@ window.map = {
   removeOnMainPinMouseDown,
   removeOnMainPinKeyDown,
   subscribeToMainPinUpdates,
-  closePopup
+  subscribeToLoadFailure,
+  deactivateAnyPin: () => deactivateNormalPin(null)
 };
