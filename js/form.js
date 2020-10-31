@@ -1,13 +1,13 @@
 'use strict';
 
-const CAPACITY_RULES_MAP = {
+const capacityRulesMap = {
   [100]: [0],
   [1]: [1],
   [2]: [1, 2],
   [3]: [1, 2, 3]
 };
 
-const PRICE_RULES_MAP = {
+const priceRulesMap = {
   [`bungalow`]: 0,
   [`flat`]: 1000,
   [`house`]: 5000,
@@ -115,12 +115,12 @@ const disable = () => {
 };
 
 const setPriceAttributes = () => {
-  const priceValue = PRICE_RULES_MAP[type.value];
+  const priceValue = priceRulesMap[type.value];
   price.placeholder = priceValue;
   price.min = priceValue;
 };
 
-const validateRoomCapacity = (rooms, guests) => CAPACITY_RULES_MAP[rooms].includes(guests);
+const validateRoomCapacity = (rooms, guests) => capacityRulesMap[rooms].includes(guests);
 
 const setCapacityValidity = (target) => {
   const isValid = validateRoomCapacity(+roomsNumber.value, +guestsNumber.value);
@@ -188,7 +188,7 @@ const setPriceValidity = () => {
   const isValid = validatePriceType(type.value, price.value);
 
   if (!isValid) {
-    price.setCustomValidity(`Цена за ночь должна быть минимум ${PRICE_RULES_MAP[type.value]} для данного типа жилья`);
+    price.setCustomValidity(`Цена за ночь должна быть минимум ${priceRulesMap[type.value]} для данного типа жилья`);
   } else {
     price.setCustomValidity(``);
   }
@@ -196,7 +196,7 @@ const setPriceValidity = () => {
   price.reportValidity();
 };
 
-const validatePriceType = (typeValue, priceNumber) => PRICE_RULES_MAP[typeValue] <= priceNumber;
+const validatePriceType = (typeValue, priceNumber) => priceRulesMap[typeValue] <= priceNumber;
 
 const enableFilters = () => {
   for (const filter of adForm.children) {

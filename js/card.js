@@ -1,6 +1,6 @@
 'use strict';
 
-const AD_ACCOMODATION_TYPES_RU = {
+const adAccomodationTypesRu = {
   [`palace`]: `Дворец`,
   [`flat`]: `Квартира`,
   [`house`]: `Дом`,
@@ -134,7 +134,7 @@ const onPopupCloseClick = (evt) => {
   }
 };
 
-const getAccomodationTypeRu = (type) => AD_ACCOMODATION_TYPES_RU[type];
+const getAccomodationTypeRu = (type) => adAccomodationTypesRu[type];
 
 window.card = {
   create,
