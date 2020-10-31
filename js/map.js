@@ -359,9 +359,8 @@ const createAds = (data) => {
   }
 
   const storage = new Map();
-  for (let i = 1; i <= data.length; i++) {
-    storage.set(i, data[i - 1]);
-  }
+  data.forEach((current, index) => storage.set(index + 1, current));
+
   return storage;
 };
 
